@@ -210,39 +210,42 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-      let cart = [];
-    
-      // Listen for click events on the "Add to Cart" buttons
-      document.querySelectorAll('.add-button').forEach(button => {
-        button.addEventListener('click', event => {
-          const itemId = event.target.dataset.itemId;
-          const itemPrice = parseFloat(event.target.dataset.price);
-          const itemTitle = event.target.dataset.title;
-          const itemBrand = event.target.dataset.brand;
-          const itemImageUrl = event.target.dataset.imageUrl;
-    
-          // Check if the item is already in the cart
-          let existingItem = cart.find(item => item.product_id === itemId);
-    
-          if (existingItem) {
-            // If the item is already in the cart, increment the quantity
-            existingItem.quantity++;
-          } else {
-            // If the item is not in the cart, add it
-            cart.push({
-              product_id: itemId,
-              price: itemPrice,
-              product_name: itemTitle,
-              product_brand: itemBrand,
-              item_image: itemImageUrl,
-              quantity: 1
-            });
-          }
-    
-          // Update the cart display and total price
-          updateCartDisplay();
+  let cart = [];
+
+  // Listen for click events on the document
+  document.addEventListener('click', event => {
+    // Check if the clicked element is an "Add to Cart" button
+    if (event.target.matches('.add-button')) {
+      const itemId = event.target.dataset.itemId;
+      const itemPrice = parseFloat(event.target.dataset.price);
+      const itemTitle = event.target.dataset.title;
+      const itemBrand = event.target.dataset.brand;
+      const itemImageUrl = event.target.dataset.imageUrl;
+
+      // Check if the item is already in the cart
+      let existingItem = cart.find(item => item.product_id === itemId);
+
+      if (existingItem) {
+        // If the item is already in the cart, increment the quantity
+        existingItem.quantity++;
+      } else {
+        // If the item is not in the cart, add it
+        cart.push({
+          product_id: itemId,
+          price: itemPrice,
+          product_name: itemTitle,
+          product_brand: itemBrand,
+          item_image: itemImageUrl,
+          quantity: 1
         });
-      });
+      }
+
+      // Update the cart display and total price
+      updateCartDisplay();
+    }
+  });
+
+
     
       function updateCartDisplay() {
         const cartItemContainer = document.getElementById('cartItem');
