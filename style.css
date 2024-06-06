@@ -38,7 +38,7 @@ body{
     opacity: 1;
     padding: 0 30px;
     font-family: "Inter", sans-serif;
-    position: absolute;
+    position: inherit;
     left: 270px;
     top: 0;
     bottom: 0;
@@ -51,6 +51,7 @@ body{
 
 .header .navbar{
     background: var(--bg-black-900);
+    font-size: 25px;
 }
 
 .nav-link{

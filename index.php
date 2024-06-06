@@ -32,7 +32,30 @@ require_once('classes/database.php');
 <body>
 
     <!-- Header -->
-      <!-- <?php include('header.php'); ?> -->
+    <header class="header">
+    <nav class="navbar navbar-expand-lg">
+      <a class="navbar-brand" href="#">
+        <img src="import/Dynrax Web Finals.png" alt="Dynrax Auto Supply" height="40">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Welcome, Username
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Add Admin</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
     <!-- End Header -->
 
     <!-- Main Container -->
@@ -181,7 +204,6 @@ require_once('classes/database.php');
     <!-- Edit Stock Only -->
 
     <div class="modal fade" id="editstockModal" tabindex="-1" aria-labelledby="editstockModalLabel" aria-hidden="true">
-<<<<<<< HEAD
       <div class="modal-dialog">
         <div class="modal-content bg-dark">
           <div class="modal-header" style="color: #fff;">
@@ -197,32 +219,6 @@ require_once('classes/database.php');
             <button type="button" class="btn btn-danger">Save changes</button>
           </div>
         </div>
-=======
-  <div class="modal-dialog">
-    <div class="modal-content bg-dark">
-      <div class="modal-header" style="color: #fff;">
-        <h5 class="modal-title" id="editstockModalLabel">Add Stocks</h5>
-      </div>
-      <div class="modal-body" style="color: #fff;">
-        <form>
-          <div class="mb-3">
-            <label for="product_name" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="product_name" readonly>
-          </div>
-          <div class="mb-3">
-            <label for="product_details" class="form-label">Product Details</label>
-            <textarea class="text" id="product_details" readonly></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger" id="save-changes">Save changes</button>
->>>>>>> 0d52bd4acad8a112742cf3645553641b04a7b245
       </div>
     </div>
   </div>
