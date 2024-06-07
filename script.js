@@ -86,38 +86,38 @@ $.ajax({
         console.error('AJAX error:', textStatus, errorThrown);
     }
 });
+
+
 const ctxPie1 = document.getElementById('pieschart');
 
-new Chart(ctxPie1, {
-    type: 'doughnut',
-    data: {
-        labels: ['Car Accesories', 'Oil', 'Degreaser', 'Auto Parts', 'Fluid'],
-        datasets: [{
-            label: 'My First Dataset',
-            data: [300, 50, 100, 50, 20],
-            backgroundColor: [
-                '#FF66C4',
-                '#A375FF',
-                '#FF914D',
-                '#FFBD59',
-                '#5271FF'
-            ],
-            hoverOffset: 4
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: 'white',
-                  }
+$.ajax({
+    url: 'get_pie_chart_data.php', // URL of your server-side script for pie chart data
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        new Chart(ctxPie1, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels, // Use labels from server
+                datasets: data.datasets // Use datasets from server
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'white' // Set legend text color to white
+                        }
+                    }
+                }
             }
-        }
+        });
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.error('AJAX error for pie chart:', textStatus, errorThrown);
     }
 });
-
 // Preview for the picture
 
 function previewImage() {

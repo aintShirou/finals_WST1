@@ -253,24 +253,6 @@ function completedOrdersforToday(){
 }
 
 
-function topProduct(){
-    $con = $this->opencon();
-    $stmt = $con->query("SELECT
-    product.product_id,
-    product.item_image,
-    product.product_brand,
-    product.product_name,
-    SUM(orders.quantity_ordered) AS total_sales
-FROM
-    orders
-INNER JOIN product ON orders.product_id = product.product_id
-GROUP BY
-    product.product_id");
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-
-
 
 function searchProducts($searchQuery) {
     $con = $this->opencon();
@@ -309,4 +291,66 @@ function getProductDetails($product_id){
     return [];
 }
 }
+
+function getTotalSales(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT SUM(payment_total) as total FROM transactions");
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function topProduct(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT
+    product.product_id,
+    product.item_image,
+    product.product_brand,
+    product.product_name,
+    SUM(orders.quantity_ordered) AS total_sales
+FROM
+    orders
+INNER JOIN product ON orders.product_id = product.product_id
+GROUP BY
+    product.product_id");
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getTotalCustomers(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT COUNT(DISTINCT customer_name) as total FROM orders");
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
+
+function countTotalProductStocks(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT SUM(stocks) as total FROM product");
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
+// Chart functions
+    function getChartData(){
+        $con = $this->opencon();
+        $stmt = $con->query("SELECT DATE(paymentdate) AS payment_date, SUM(payment_total) AS Total FROM transactions GROUP BY DATE(paymentdate)");
+        return $stmt->fetchAll();
+    }
+
+    function getPieChartData(){
+        $con = $this->opencon();
+        $stmt = $con->query("SELECT 
+    category.cat_type AS CategoryName, 
+    SUM(orders.quantity_ordered) AS TotalProductsBought
+FROM 
+    orders
+INNER JOIN 
+    product ON orders.product_id = product.product_id
+INNER JOIN 
+    category ON product.cat_id = category.cat_id
+GROUP BY 
+    category.cat_type");
+        return $stmt->fetchAll();
+    }
+
+
+
 }

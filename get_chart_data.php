@@ -1,30 +1,36 @@
 <?php
-header('Content-Type: application/json');
 
 require_once('classes/database.php');
-$db = new database();  
+$con = new database();  
 
-// Query the database for total sales per day
-$sql = 'SELECT DATE(sale_date) as date, SUM(sale_amount) as total_sales FROM sales GROUP BY DATE(sale_date)';
-$data = $db->query($sql);  // Use the query method in your Database class
+header('Content-Type: application/json');
 
-// Format the data as needed
-$labels = array_column($data, 'date');
-$datasets = [
-    [
-        'label' => 'Total Sales',
-        'data' => array_column($data, 'total_sales'),
-        'borderColor' => '#FF66C4',
-        'borderWidth' => 2
-    ]
-];
+try {
+    $result = $con->getChartData();
 
-// Return the data as a JSON object
-echo json_encode(['labels' => $labels, 'datasets' => $datasets]);
+    $labels = [];
+    $data = [];
 
+    foreach ($result as $row) {
+        $labels[] = $row['payment_date'];
+        $data[] = $row['Total'];
+    }
 
+    $dataset1 = [
+        'label' => 'Sales Amount',
+        'data' => $data,
+        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+        'borderColor' => 'rgba(255, 99, 132, 1)',
+        'borderWidth' => 3
+    ];
 
+    $response = [
+        'labels' => $labels,
+        'datasets' => [$dataset1]
+    ];
 
+    echo json_encode($response);
 
-
-
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}

@@ -94,16 +94,22 @@ require_once('classes/database.php');
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md-3">
+                  <?php
+                    $total = $con->getTotalSales();
+                      ?>
                   <div class="box">
                     <h3>Total Sales</h3>
-                    <h1>999</h1>
+                    <h1><?php echo number_format($total['total'], 0);?> <h1>
                     <p><span>100%</span> +₱2.8k this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
+                <?php
+                    $cust = $con->getTotalCustomers();
+                      ?>
                   <div class="box">
                     <h3>Total Customers</h3>
-                    <h1>999</h1>
+                    <h1><?php echo $cust['total'];?></h1>
                     <p><span>100%</span> +₱2.8k this week</p>
                   </div>
                 </div>
@@ -115,9 +121,12 @@ require_once('classes/database.php');
                   </div>
                 </div>
                 <div class="col-md-3">
+                <?php
+                    $totalp = $con->countTotalProductStocks();
+                      ?>
                   <div class="box">
                     <h3>Product in Stocks</h3>
-                    <h1>999</h1>
+                    <h1><?php echo $totalp['total'];?></h1>
                     <p><span>100%</span> +₱2.8k this week</p>
                   </div>
                 </div>
