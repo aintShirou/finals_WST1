@@ -1,7 +1,7 @@
 <?php
 require_once('classes/database.php'); // Adjust the path as necessary to include your database class
 
-$con = new Database(); // Assuming your class is named Database
+$con = new database(); // Assuming your class is named Database
 
 // Check if product ID is provided
 if(isset($_POST['id'])) {

@@ -183,17 +183,15 @@
                               </div>
                               <div class="stock-category">
                                   <label for="stockCategory" class="form-label"></label>
-                                  <select class="form-select" id="stockCategory">
-                                  <option value="0">Select Category</option>
+                                  <select class="form-select" id="stockCategory" onchange="changeCategory()">
+                                  <option value="0">All</option>
                                   <?php 
-                                    $category = $con->viewCat();
-                                    foreach($category as $cat){
+                                  $category = $con->viewCat();
+                                  foreach($category as $cat){
+                                      echo "<option value='{$cat['cat_id']}'>{$cat['cat_type']}</option>";
+                                  }
                                   ?>
-                                  <option value="<?php echo $cat['cat_id'];?>"><?php echo $cat['cat_type'];?></option>
-                                  <?php
-                                   }
-                                  ?>
-                                </select>
+                            </select>
                             </div>
                           </div>
                         </div>
@@ -218,33 +216,28 @@
                   <div class="productcardview">
                     <div class="container-fluid my-5">
                       <div class="card-container">
-                      <?php 
-                            $categoryId = isset($_GET['cat_id']) ? $_GET['cat_id'] : null;
-                            $page = isset($_GET['page']) ? $_GET['page'] : 1;
-                            $records_per_page = 2;
-                            $products = $con->viewProducts1($categoryId, $page, $records_per_page);
-                            foreach($products as $product) {
+                        <?php 
+                          $categoryId = isset($_GET['cat_id']) && $_GET['cat_id'] != '0' ? filter_input(INPUT_GET, 'cat_id', FILTER_SANITIZE_NUMBER_INT) : null;
+                          $page = isset($_GET['page']) ? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 1;
+                          $records_per_page = 2;
+                          $products = $con->viewProducts1($categoryId, $page, $records_per_page);
+                          foreach($products as $product) {
                         ?>
                         <form method="post">
                           <div class="card">
-                            <!-- Image -->
-                            <img src="<?php echo $product['item_image']; ?>" class="card-img-top" alt="Item Image">
+                            <img src="<?php echo htmlspecialchars($product['item_image']); ?>" class="card-img-top" alt="Image of <?php echo htmlspecialchars($product['product_name']); ?>">
                             <div class="card-body">
-                              <!-- Item Brand -->
-                              <h4 class="card-title"><?php echo $product['product_brand']; ?></h4>
-                              <!-- Item Name -->
-                              <h5 class="card-title"><?php echo $product['product_name']; ?></h5>
-                              <!-- Item Price -->
-                              <p class="card-text">Price: PHP <?php echo $product['price']; ?></p>
-                              <!-- Item Quantity -->
-                              <p class="card-text">Stocks: <?php echo $product['stocks']; ?></p>
+                              <h4 class="card-title"><?php echo htmlspecialchars($product['product_brand']); ?></h4>
+                              <h5 class="card-title"><?php echo htmlspecialchars($product['product_name']); ?></h5>
+                              <p class="card-text">Price: PHP <?php echo htmlspecialchars($product['price']); ?></p>
+                              <p class="card-text">Stocks: <?php echo htmlspecialchars($product['stocks']); ?></p>
                               <div class="d-flex justify-content-between align-items-center">
-                              <input type="hidden" name="id" value="<?php echo $product['product_id']; ?>">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($product['product_id']); ?>">
                                 <a type="submit" class="btn btn-success" name="editButton" data-toggle="modal" data-target="#editProductModal">
                                   <i class='bx bxs-edit' style="font-size: 25px; vertical-align: middle;"></i>
                                 </a>
-                                <button type="button" class="btn btn-danger" onclick="confirmDeletion(<?php echo $product['product_id']; ?>)">
-                                <i class='bx bx-trash' style="font-size: 25px; vertical-align: middle;"></i>
+                                <button type="button" class="btn btn-danger" onclick="confirmDeletion(<?php echo htmlspecialchars($product['product_id']); ?>)">
+                                  <i class='bx bx-trash' style="font-size: 25px; vertical-align: middle;"></i>
                                 </button>
                               </div>
                             </div>
@@ -256,21 +249,18 @@
                       </div>
                     </div>
                   </div>
-      
+
                   <div class="pagination">
-    <?php
-        // Get the total number of products
-        $total_products = $con->getProductCount($categoryId);
+                    <?php
+                      $total_products = $con->getProductCount($categoryId);
+                      $total_pages = ceil($total_products / $records_per_page);
 
-        // Calculate the total number of pages
-        $total_pages = ceil($total_products / $records_per_page);
-
-        // Display the pagination links
-        for ($i = 1; $i <= $total_pages; $i++) {
-            echo "<a href='stock.php?cat_id=$categoryId&page=$i'>$i</a> ";
-        }
-    ?>
-</div>
+                      for ($i = 1; $i <= $total_pages; $i++) {
+                          $class = ($page == $i) ? 'class="active"' : '';
+                          echo "<a href='stock.php?cat_id=$categoryId&page=$i' $class>$i</a> ";
+                      }
+                    ?>
+                  </div>
       
                 </div>
       
@@ -406,6 +396,33 @@
           </div>
         </div>
       </div>
+
+      <script>
+      function changeCategory() {
+        var categoryId = document.getElementById('stockCategory').value;
+        // Check if the "Select Category" option is selected
+        if(categoryId == '0') {
+          // Redirect to show all products (assuming 'stock.php' without parameters shows all)
+          window.location.href = 'stock.php';
+        } else {
+          // Redirect to show products from the selected category
+          window.location.href = 'stock.php?cat_id=' + categoryId + '&page=1';
+        }
+      }
+      
+      // Function to get URL parameters
+      function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+      }
+      
+      // Set the dropdown value based on the URL parameter 'cat_id'
+      document.addEventListener("DOMContentLoaded", function() {
+        var categoryId = getURLParameter('cat_id'); // Get 'cat_id' from URL
+        if(categoryId) {
+          document.getElementById('stockCategory').value = categoryId;
+        }
+      });
+      </script>
 
 <!-- AJAX Libary -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -547,22 +564,31 @@ $(document).ready(function() {
 
 <script>
 $(document).ready(function(){
-  $('#searchInput, #stockCategory').on('input change', function() {
-    var searchQuery = $('#searchInput').val();
-    var selectedCategory = $('#stockCategory').val();
+  $('#searchInput').on('input', function() {
+    var searchQuery = $('#searchInput').val().trim();
 
+    // If search query is empty, reload the page
+    if(searchQuery.length === 0) {
+      window.location.reload();
+      return; // Stop further execution
+    }
+
+    // Define the data to send with the search query
+    var dataToSend = { search: searchQuery };
+
+    // Use AJAX to fetch content based on the search query
     $.ajax({
       url: 'search_products.php',
-      type: 'post',
-      data: {search: searchQuery, category: selectedCategory},
+      type: 'POST',
+      data: dataToSend,
       success: function(response) {
+        // Replace the content in .card-container with the response
         $('.card-container').html(response);
       }
     });
   });
 });
 </script>
-
 <script>
 document.getElementById('stockCategory').addEventListener('change', function() {
   var xhr = new XMLHttpRequest();

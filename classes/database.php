@@ -254,9 +254,11 @@ function completedOrdersforToday(){
 
 
 
-function searchProducts($searchQuery) {
+function searchProducts($searchQuery = null) {
     $con = $this->opencon();
-    $stmt = $con->prepare("SELECT * FROM product WHERE product_name LIKE :searchQuery OR product_brand LIKE :searchQuery");
+    $sql = "SELECT * FROM product WHERE product_name LIKE :searchQuery OR product_brand LIKE :searchQuery";
+
+    $stmt = $con->prepare($sql);
 
     $searchParam = "%$searchQuery%";
     $stmt->bindParam(':searchQuery', $searchParam);
@@ -265,6 +267,22 @@ function searchProducts($searchQuery) {
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+function getProductsPage($currentPage, $itemsPerPage) {
+    $con = $this->opencon(); // Use the same method to open the connection as in searchProducts
+    $offset = ($currentPage - 1) * $itemsPerPage;
+    $sql = "SELECT * FROM products LIMIT :offset, :itemsPerPage";
+
+    $stmt = $con->prepare($sql);
+    // Bind parameters similarly to how it's done in searchProducts, using bindParam
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 // functions in index.php
 function addProductStock($product_id, $quantity){
@@ -351,6 +369,33 @@ GROUP BY
         return $stmt->fetchAll();
     }
 
+
+    function getProductCountWithSearch($searchTerm = '', $categoryId = null) {
+        $con = $this->opencon(); // Ensure consistent connection handling
+        $query = "SELECT COUNT(*) FROM products WHERE name LIKE :searchTerm";
+        
+        // If a category ID is provided, add it to the query
+        if ($categoryId !== null) {
+            $query .= " AND category_id = :categoryId";
+        }
+    
+        $stmt = $con->prepare($query); // Use the connection directly
+    
+        // Bind the search term with wildcards for partial matching
+        $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', PDO::PARAM_STR);
+        
+        // If a category ID is provided, bind it to the statement
+        if ($categoryId !== null) {
+            $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+        }
+    
+        $stmt->execute();
+    
+        // Fetch the count from the database
+        $count = $stmt->fetchColumn();
+    
+        return $count;
+    }
 
 
 }
