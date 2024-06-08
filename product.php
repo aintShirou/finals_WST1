@@ -119,17 +119,15 @@
                                             </div>
                                             <div class="col-md-6">
                                               <div class="mb-3">
-                                                <select class="form-select" id="productCategory" name="product_category">
-                                                  <option value="0">Select Category</option>
-                                                  <?php 
+                                              <select class="form-select" id="stockCategory" onchange="changeCategory()">
+                                                    <option value="0">All</option>
+                                                    <?php 
                                                     $category = $con->viewCat();
                                                     foreach($category as $cat){
-                                                    ?>
-                                                      <option value="<?php echo $cat['cat_id'];?>"><?php echo $cat['cat_type'];?></option>
-                                                    <?php
+                                                        echo "<option value='{$cat['cat_id']}'>{$cat['cat_type']}</option>";
                                                     }
-                                                    ?>            
-                                                </select>
+                                                    ?>
+                                              </select>
                                               </div>
                                             </div>
                                           </div>
@@ -309,19 +307,20 @@
       }
     });
     </script>
+
+    <!-- AJAX libary -->
     
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
 $(document).ready(function(){
-  $('#searchInput, #stockCategory').on('input change', function() {
+  $('#searchInput').on('input', function() {
     var searchQuery = $('#searchInput').val();
-    var selectedCategory = $('#stockCategory').val();
 
     $.ajax({
       url: 'search_product_orders.php',
       type: 'post',
-      data: {search: searchQuery, category: selectedCategory},
+      data: {search: searchQuery},
       success: function(response) {
         $('.card-container').html(response);
       }
@@ -330,38 +329,49 @@ $(document).ready(function(){
 });
 </script>
 
-
 <script>
-document.getElementById('stockCategory').addEventListener('change', function() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
-  xhr.onload = function() {
-    if (this.status == 200) {
-      var products = JSON.parse(this.responseText);
-      var output = '';
-      for(var i in products) {
-        output += '<form method="post"><div class="card">' +
-              '<img src="' + products[i].item_image + '" class="card-img-top" alt="Item Image">' +
-              '<div class="card-body">' +
-              '<h4 class="card-title">' + products[i].product_brand + '</h4>' +
-              '<h5 class="card-title">' + products[i].product_name + '</h5>' +
-              '<p class="card-text">Price: PHP ' + products[i].price + '</p>' +
-              '<p class="card-text">Stocks: ' + products[i].stocks + '</p>' +
-              '<div class="d-flex justify-content-between align-items-center">' +
-              '<input type="hidden" name="id" value="' + products[i].product_id + '">' +
-              '<a type="submit" class="btn btn-success" name="editButton" data-toggle="modal" data-target="#editProductModal">' +
-              '<i class=\'bx bxs-edit\' style="font-size: 25px; vertical-align: middle;"></i></a>' +
-              '<button type="submit" class="btn btn-danger" name="delete">' +
-              '<input type="hidden" name="id" value="' + products[i].product_id + '">' +
-              '<i class=\'bx bx-trash\' style="font-size: 25px; vertical-align: middle;"></i></button>' +
-              '</div></div></div></form>';
-      }
-      document.querySelector('.card-container').innerHTML = output;
-    }
+document.addEventListener("DOMContentLoaded", function() {
+  // Function to get URL parameters
+  function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
   }
-  xhr.send();
+
+  var categoryId = getURLParameter('cat_id'); // Get 'cat_id' from URL
+  if(categoryId) {
+    document.getElementById('stockCategory').value = categoryId;
+  }
+
+  document.getElementById('stockCategory').addEventListener('change', function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
+    xhr.onload = function() {
+      if (this.status == 200) {
+        var products = JSON.parse(this.responseText);
+        var output = '';
+        for(var i in products) {
+          output += '<div class="view-products">' +
+                '<div class="product-boxs">' +
+                '<img class="product-image" src="' + products[i].item_image + '">' +
+                '<p class="product-brand">' + products[i].product_brand + '</p>' +
+                '<p class="product-title">' + products[i].product_name + '</p>' +
+                '<h2 class="product-price">₱' + products[i].price + '</h2>' +
+                '<div class="checkoutbtn">' +
+                '<button type="button" class="add-button" ' +
+                'data-item-id="' + products[i].product_id + '" ' +
+                'data-image-url="' + products[i].item_image + '" ' +
+                'data-brand="' + products[i].product_brand + '" ' +
+                'data-title="' + products[i].product_name + '" ' +
+                'data-price="' + products[i].price + '">' +
+                'Add to Cart</button>' +
+                '</div></div></div>';
+        }
+        document.querySelector('.card-container').innerHTML = output;
+      }
+    }
+    xhr.send();
+  });
 });
-</script>
+      </script>
 
 
 

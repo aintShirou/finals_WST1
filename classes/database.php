@@ -269,21 +269,6 @@ function searchProducts($searchQuery = null) {
 }
 
 
-function getProductsPage($currentPage, $itemsPerPage) {
-    $con = $this->opencon(); // Use the same method to open the connection as in searchProducts
-    $offset = ($currentPage - 1) * $itemsPerPage;
-    $sql = "SELECT * FROM products LIMIT :offset, :itemsPerPage";
-
-    $stmt = $con->prepare($sql);
-    // Bind parameters similarly to how it's done in searchProducts, using bindParam
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $stmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-
 // functions in index.php
 function addProductStock($product_id, $quantity){
     try{
