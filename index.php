@@ -99,7 +99,7 @@ require_once('classes/database.php');
                       ?>
                   <div class="box">
                     <h3>Total Sales</h3>
-                    <h1><?php echo number_format($total['total'], 0);?> <h1>
+                    <h1><?php echo number_format($total['total'], 0);?><h1>
                     <p><span>100%</span> +₱2.8k this week</p>
                   </div>
                 </div>
@@ -145,15 +145,14 @@ require_once('classes/database.php');
                   <div class="container-fluid">
                     <div class="card-container">
                       <div class="lowstock">
-                        <div class="row low-stock-products">
-                          <div class="col-md-6 low-stock-product-card">
-
                             <?php
                               $lowstocks = $con->lowStocks();
                               foreach($lowstocks as $lowstock){
                                 ?>
                             <div class="product-card">
+                                <div class="productimgs">
                                 <img class="product-images" src="<?php echo $lowstock['item_image'];?>" alt="Product Image">
+                                </div>
                                 <div class="product-details">
                                     <h4 class="product-names"><?php echo $lowstock['product_brand'];?></h4>
                                     <h4 class="product-name"><?php echo $lowstock['product_name'];?></h4>
@@ -164,8 +163,7 @@ require_once('classes/database.php');
                             <?php
                               }
                               ?>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                   </div>

@@ -251,8 +251,8 @@ body{
   }
   
   .product-name {
-    margin-top: 0;
-    margin-bottom: 5px;
+    margin: 0;
+    font-size: 20px;
   }
   
   .product-quantity {
@@ -278,24 +278,30 @@ body{
     border: 1px solid #ddd;
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 20px;
-    max-width: 15rem;
+    margin: 10px;
+    width: 15rem;   
+  }
+
+  .productimgs{
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .product-images {
-    width: 100%;
-    height: auto;
-  }
+    width: 15rem;
+  } 
   
   .product-detail {
     padding: 15px;
+    margin: 0;
   }
   
   .product-names {
     text-transform: uppercase;
     font-weight: bold;
-    margin-bottom: 10px;
     color: var(--text-black-200);
+    font-size: 15px;
   }
 
   .product-quantitys{
@@ -332,6 +338,12 @@ body{
 
   .products-sale{
     color: #257004;
+  }
+
+  .addstockbtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   
