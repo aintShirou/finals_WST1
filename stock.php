@@ -120,6 +120,9 @@
     <!-- Boxicon -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
+    <!-- SweetAlert -->
+    <link rel="stylesheet" href="./package/dist/sweetalert2.css">
+
 </head>
 <style>
 .pagination {
@@ -413,13 +416,13 @@
         </div>
       </div>
 
-
 <!-- AJAX Libary -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<script src="./package/dist/sweetalert2.min.js"></script>
 <!-- AJAX for Updating Product Details-->
 <script>
-$(document).ready(function() {
+  $(document).ready(function() {
   $('#editProductForm').submit(function(event) {
     event.preventDefault();
 
@@ -429,19 +432,48 @@ $(document).ready(function() {
     var productPrice = $('#editProductPrice').val();
     var productQuantity = $('#editProductQuantity').val();
 
-    $.ajax({
-      url: 'edit_product.php',
-      type: 'post',
-      data: {
-        id: productId,
-        productBrand: productBrand,
-        productName: productName,
-        productPrice: productPrice,
-        productQuantity: productQuantity
-      },
-      success: function(response) {
-        // Handle the response from the server
-        alert(response);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will update this product!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: 'edit_product.php',
+          type: 'post',
+          data: {
+            id: productId,
+            productBrand: productBrand,
+            productName: productName,
+            productPrice: productPrice,
+            productQuantity: productQuantity
+          },
+          success: function(response) {
+            // Handle the response from the server
+            Swal.fire({
+              title: 'Success!',
+              text: 'Product updated successfully!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // reload the page
+              }
+            });
+          },
+          error: function(xhr, status, error) {
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to update product!',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
       }
     });
   });
