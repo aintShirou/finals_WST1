@@ -92,13 +92,13 @@ function getProductCount($categoryId = null) {
     }
 
 
-function delete($productid){
+function delete($productId){
     try{
         $con = $this->opencon();
         $con->beginTransaction();
 
         $query = $con->prepare("DELETE FROM product WHERE product_id = ?");
-        $query->execute([$productid]);
+        $query->execute([$productId]);
 
         $con->commit();
         return true;

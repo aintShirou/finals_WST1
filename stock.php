@@ -91,15 +91,7 @@
       }
     }
 
-    if(isset($_POST['delete'])){
-      $productid = $_POST['id'];
-      if($con->delete($productid)){
-          header('location:stock.php');
-  } else {
-      echo 'Something went wrong';
-  }
-  }
-
+ 
   ?>
 
 
@@ -251,9 +243,8 @@
                                 <a type="submit" class="btn btn-success" name="editButton" data-toggle="modal" data-target="#editProductModal">
                                   <i class='bx bxs-edit' style="font-size: 25px; vertical-align: middle;"></i>
                                 </a>
-                                <button type="submit" class="btn btn-danger" name="delete">
-                                  <input type="hidden" name="id" value="<?php echo $product['product_id']; ?>">
-                                  <i class='bx bx-trash' style="font-size: 25px; vertical-align: middle;"></i>
+                                <button type="button" class="btn btn-danger" onclick="confirmDeletion(<?php echo $product['product_id']; ?>)">
+                                <i class='bx bx-trash' style="font-size: 25px; vertical-align: middle;"></i>
                                 </button>
                               </div>
                             </div>
@@ -478,6 +469,57 @@
     });
   });
 });
+</script>
+
+<script>
+ function confirmDeletion(productId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Perform AJAX request to delete the product
+      $.ajax({
+        url: 'delete_product.php', // Your endpoint for deleting products
+        type: 'POST',
+        data: {id: productId},
+        success: function(response) {
+          let jsonResponse = JSON.parse(response);
+          if(jsonResponse.success) {
+            Swal.fire(
+              'Deleted!',
+              jsonResponse.message,
+              'success'
+            ).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Reload the page
+              }
+            });
+          } else {
+            Swal.fire(
+              'Failed!',
+              jsonResponse.message,
+              'error'
+            );
+          }
+        },
+        error: function(xhr, status, error) {
+          // Handle error scenario
+          Swal.fire(
+            'Error!',
+            'An error occurred while deleting the product.',
+            'error'
+          );
+        }
+      });
+    }
+  })
+}
 </script>
 <!-- Script for Retrieving Data when Edit Button is clicked -->
 <script>
