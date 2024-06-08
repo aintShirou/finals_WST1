@@ -56,6 +56,32 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
 </head>
+
+<style>
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.pagination a {
+    color: white;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+}
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+</style>
 <body>
 
       <!-- Header -->
@@ -135,9 +161,12 @@
                                         <div class="container-fluid my-5">
                                           <div class="card-container">
                                           <?php 
-                                          $products = $con->viewProducts();
-                                          foreach($products as $product) {
-                                            ?>
+                                                $categoryId = isset($_GET['cat_id']) && $_GET['cat_id'] != '0' ? filter_input(INPUT_GET, 'cat_id', FILTER_SANITIZE_NUMBER_INT) : null;
+                                                $page = isset($_GET['page']) ? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 1;
+                                                $records_per_page = 2;
+                                                $products = $con->viewProducts1($categoryId, $page, $records_per_page);
+                                                foreach($products as $product) {
+                                              ?>                      
                                             <div class="view-products">
                                               <div class="product-boxs">
                                                 <img class="product-image" src="<?php echo $product['item_image']; ?>">
@@ -162,7 +191,19 @@
                                         </div>
                                       </div>
                                     </div>
+                                    <div class="pagination">
+                                    <?php
+                      $total_products = $con->getProductCount($categoryId);
+                      $total_pages = ceil($total_products / $records_per_page);
+
+                      for ($i = 1; $i <= $total_pages; $i++) {
+                          $class = ($page == $i) ? 'class="active"' : '';
+                          echo "<a href='product.php?cat_id=$categoryId&page=$i' $class>$i</a> ";
+                      }
+                    ?>
+                  </div>
                                   </div>
+
                                   <div class="col-md-6">
                                     <div class="checkout">
                                       <div class="row">
@@ -330,24 +371,18 @@ $(document).ready(function(){
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // Function to get URL parameters
-  function getURLParameter(name) {
-    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-  }
+document.getElementById('stockCategory').addEventListener('change', function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
 
-  var categoryId = getURLParameter('cat_id'); // Get 'cat_id' from URL
-  if(categoryId) {
-    document.getElementById('stockCategory').value = categoryId;
-  }
+  // Display loading indicator
+  document.querySelector('.card-container').innerHTML = '<p>Loading products...</p>';
 
-  document.getElementById('stockCategory').addEventListener('change', function() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
-    xhr.onload = function() {
-      if (this.status == 200) {
-        var products = JSON.parse(this.responseText);
-        var output = '';
+  xhr.onload = function() {
+    if (this.status == 200) {
+      var products = JSON.parse(this.responseText);
+      var output = '';
+      if (products.length > 0) {
         for(var i in products) {
           output += '<div class="view-products">' +
                 '<div class="product-boxs">' +
@@ -365,13 +400,25 @@ document.addEventListener("DOMContentLoaded", function() {
                 'Add to Cart</button>' +
                 '</div></div></div>';
         }
-        document.querySelector('.card-container').innerHTML = output;
+      } else {
+        output = '<p>No products found.</p>';
       }
+      document.querySelector('.card-container').innerHTML = output;
+    } else {
+      // Handle errors
+      document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
     }
-    xhr.send();
-  });
+  };
+
+  xhr.onerror = function() {
+    // Handle network errors
+    document.querySelector('.card-container').innerHTML = '<p>Network error. Please check your connection and try again.</p>';
+  };
+
+  xhr.send();
 });
       </script>
+      
 
 
 
