@@ -4,39 +4,7 @@
     $con = new database();  
 
 
-    if (isset($_POST['checkout'])) {
-      try {
-          // Get the form data
-          $customer_name = $_POST['customer_name'];
-          $payment_method = $_POST['payment_method'];
-          $cart_items = json_decode($_POST['cart_items'], true);
-  
-          // Check if cart items are empty
-          if (empty($cart_items)) {
-              throw new Exception('Cart is empty');
-          }
-  
-          // Loop through the cart items and save each one to the database
-          foreach ($cart_items as $item) {
-              $product_id = $item['product_id'];
-              $quantity = $item['quantity'];
-  
-              // Insert the order into the database
-              $order_id = $con->insertOrders($customer_name, $product_id, $quantity);
-  
-              // Insert the transaction into the database
-              $con->insertTransaction($order_id, $payment_method, date('Y-m-d H:i:s'), $item['price'] * $quantity);
-  
-              // Subtract product bought from the available stocks
-              $con->updateProductStock($product_id, $quantity);
-          }
-          header("Location: product.php");
-          exit();
-      } catch (Exception $e) {
-          // Handle the exception
-          echo 'Error: '. $e->getMessage();
-      }
-  }
+   
 
 ?>
 <!DOCTYPE html>
@@ -54,6 +22,9 @@
 
     <!-- Boxicon -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Sweet Alert -->
+    <link rel="stylesheet" href="./package/dist/sweetalert2.css">
 
 </head>
 
@@ -133,7 +104,7 @@
                             <!-- Customer Order Form -->
                             
                             <!-- Bago -->
-                            <form class="order-form" method="post">
+                            <!-- <form class="order-form" method="post"> -->
                               <div class="container-fluid">
                                 <div class="row">
                                   <div class="col-md-6">
@@ -206,34 +177,45 @@
 
                                   <div class="col-md-6">
                                     <div class="checkout">
-                                      <div class="row">
-                                        <div class="col-md-6">
-                                          <input type="text" class="form-control" placeholder="Enter Customer Name" name="customer_name">
-                                        </div>
-                                        <div class="col-md-6">
-                                          <div class="mb-3">
-                                            <select class="form-select" id="paymentmethod" name="payment_method">
-                                              <option value="0">Select Payment</option>
-                                              <option value="1">Cash</option>
-                                              <option value="2">Debit/Credit</option>
-                                              <option value="3">E-Wallet</option>
-                                            </select>
+                                      <!-- Start of your new form -->
+                                      <form id="myForm" method="post">
+                                        <div class="row">
+                                          <div class="col-md-6">
+                                            <input type="text" class="form-control" placeholder="Enter Customer Name" name="customer_name">
+                                          </div>
+                                          <div class="col-md-6">
+                                            <div class="mb-3">
+                                              <select class="form-select" id="paymentmethod" name="payment_method">
+                                                <option value="0">Select Payment</option>
+                                                <option value="1">Cash</option>
+                                                <option value="2">Debit/Credit</option>
+                                                <option value="3">E-Wallet</option>
+                                              </select>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div class="head"><p>My Cart</p></div>
-                                      <div id="cartItem">Your cart is Empty</div>
-                                      <div class="foot">
-                                        <h3>Total</h3>
-                                        <h2 id="total">₱ 0.00</h2>
-                                        <input type="hidden" id="cartItemsInput" name="cart_items">
-                                        <button id="checkoutButton" type="submit" name="checkout">Checkout</button>
-                                      </div>
+                                        <div class="row">
+                                          <div class="col-md-12 my-3">
+                                            <input type="number" class="form-control" id="amountPaid" placeholder="Enter amount paid">
+                                          </div>
+                                        </div>
+                                        <div class="head"><p>My Cart</p></div>
+                                        <div id="cartItem">Your cart is Empty</div>
+                                        <div class="foot">
+                                          <h3>Total</h3>
+                                          <h2 id="total">₱ 0.00</h2>
+                                          <div id="changeDisplay">Change: ₱0.00</div>
+                                          <input type="hidden" id="cartItemsInput" name="cart_items">
+                                          <!-- Your original form's submit button -->
+                                          <button type="submit" id="submitButton" name="checkout">Checkout</button>
+                                        </div>
+                                      </form>
+                                      <!-- End of your new form -->
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </form>
+                            <!-- </form> -->
                             <!-- hangang Dito -->
                           </div>
                         </div>
@@ -418,7 +400,79 @@ document.getElementById('stockCategory').addEventListener('change', function() {
   xhr.send();
 });
       </script>
-      
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Listen for input events on the amount paid field
+  document.getElementById('amountPaid').addEventListener('input', function() {
+    const totalAmount = parseFloat(document.getElementById('total').textContent.replace('₱ ', ''));
+    const amountPaid = parseFloat(this.value);
+
+    // Calculate the change
+    const change = amountPaid - totalAmount;
+
+    // Display the change
+    // Ensure there's a place in your HTML to display the change. For example:
+    // <div id="changeDisplay">Change: ₱0.00</div>
+    if (!isNaN(change) && change >= 0) {
+      document.getElementById('changeDisplay').textContent = 'Change: ₱' + change.toFixed(2);
+    } else {
+      document.getElementById('changeDisplay').textContent = 'Change: ₱0.00';
+    }
+  });
+});
+</script>
+
+
+<script src="./package/dist/sweetalert2.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const form = document.getElementById('myForm');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent the form from submitting immediately
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "Do you want to proceed with the checkout?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, proceed!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // User confirmed, now submit form data using AJAX
+            const formData = new FormData(form); // Assuming 'form' is your form element
+
+            fetch('submit.php', { // Your server-side script to handle the submission
+              method: 'POST',
+              body: formData,
+            })
+            .then(response => response.json()) // Assuming the server responds with JSON
+            .then(data => {
+              // Handle server response here
+              if(data.success) {
+                Swal.fire('Success!', 'Your form has been submitted.', 'success')
+                .then(() => {
+                  window.location.reload(); // Reload the page after showing success message
+                });
+              } else {
+                Swal.fire('Error!', 'There was a problem with your submission.', 'error');
+              }
+            })
+            .catch((error) => {
+              // Handle any error that occurred during the fetch operation
+              console.error('Error:', error);
+              Swal.fire('Error!', 'There was a problem with your submission.', 'error');
+            });
+          }
+        });
+      });
+    });
+    </script>  
 
 
 
