@@ -3,12 +3,16 @@
 require_once('classes/database.php');
     $con = new database();  
 
-
-
-    if(isset($_POST['addstock'])){
-
-    }
-   
+    
+    if(isset($_POST['save'])){
+      $product_id = $_POST['product_id']; 
+      $quantity = $_POST['stock'];
+      if($con->addProductStock($product_id, $quantity)){
+          echo "Stock updated successfully.";
+      } else {
+          echo "Failed to update stock.";
+      }
+  }
 ?>
 
 
@@ -27,6 +31,9 @@ require_once('classes/database.php');
 
     <!-- Boxicon -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+     <!-- Sweet Alert -->
+     <link rel="stylesheet" href="./package/dist/sweetalert2.css">
 
 </head>
 <body>
@@ -157,7 +164,8 @@ require_once('classes/database.php');
                                     <h4 class="product-names"><?php echo $lowstock['product_brand'];?></h4>
                                     <h4 class="product-name"><?php echo $lowstock['product_name'];?></h4>
                                     <p class="product-quantitys">Only <strong><?php echo $lowstock['stocks'];?></strong> left in stock!</p>
-                                    <a class="product-link" href="#" data-toggle="modal" data-target="#editstockModal">Add Stock</a>
+                                    <input type="hidden" name="product_id" value="<?php echo $lowstock['product_id'];?>">
+                                    <a class="product-link" href="#" data-toggle="modal" data-target="#editstockModal" data-product-id="<?php echo $lowstock['product_id']; ?>" data-product-brand="<?php echo $lowstock['product_brand']; ?>" data-product-name="<?php echo $lowstock['product_name']; ?>">Add Stock</a>
                                 </div>
                             </div>
                             <?php
@@ -210,91 +218,56 @@ require_once('classes/database.php');
 
     <!-- Edit Stock Only -->
 
-    <div class="modal fade" id="editstockModal" tabindex="-1" aria-labelledby="editstockModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content bg-dark">
-          <div class="modal-header" style="color: #fff;">
-            <h5 class="modal-title" id="editstockModalLabel">Add Stock</h5>
-          </div>
-          <div class="modal-body" style="color: #fff;">
-            <form id="productForm">
-              <!-- The form fields will go here -->
-            </form>
+  
+<div class="modal fade" id="editstockModal" tabindex="-1" aria-labelledby="editstockModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark">
+      <div class="modal-header" style="color: #fff;">
+        <h5 class="modal-title" id="editstockModalLabel">Add Stock</h5>
+      </div>
+      <div class="modal-body" style="color: #fff;">
+        <div id="productDetails">
+          <h6>Brand: <span id="productBrand"></span></h6>
+          <h6>Name: <span id="productName"></span></h6>
+        </div>
+        <form method="post" id="stockForm">
+          <!-- Hidden input for product ID -->
+          <input type="hidden" id="modalProductIdInput" name="product_id">
+          
+          <div class="form-group">
+            <label for="newStockLevel">Stock to Add:</label>
+            <input type="number" class="form-control" id="newStockLevel" name="newStockLevel">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-danger">Save changes</button>
+            <button type="button" class="btn btn-danger" id="save-changes">Save changes</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-  $(document).ready(function() {
-    $('#editstockModal').on('shown.bs.modal', function(event) {
-      const product_id = $(event.relatedTarget).data('product-id');
-      $.ajax({
-        type: 'GET',
-        url: 'getproductdetails.php', // assume this script returns product details
-        data: { productId: product_id }, // pass the product ID as a parameter
-        success: function(response) {
-          $('#product_brand').text(response.brand);
-          $('#product_name').text(response.name);
-          $('#stock').text(response.stocks);
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        }
-      });
-    });
-
-    $('#save-changes').on('click', function() {
-      const add_stock = $('#add_stock').val();
-      const product_id = $(event.relatedTarget).data('product-id');
-      $.ajax({
-        type: 'POST',
-        url: 'addproductstock.php', // assume this script updates the stock quantity
-        data: { productId: product_id, quantity: add_stock }, // pass the product ID and quantity as parameters
-        success: function(response) {
-          if (response === true) {
-            console.log('Stock updated successfully!');
-            $('#editstockModal').modal('hide');
-          } else {
-            console.log('Error updating stock!');
-          }
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        }
-      });
-    });
-  });
-</script>
-
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('#editstockModal').on('show.bs.modal', function (event) {
-    let button = $(event.relatedTarget); // Button that triggered the modal
-    let productId = button.data('id'); // Extract info from data-* attributes
+<script src="./package/dist/sweetalert2.min.js"></script>
 
-    // Make an AJAX request to fetch the product details
-    $.ajax({
-      url: 'fetch_product.php',
-      type: 'GET',
-      data: {id: productId},
-      success: function (data) {
-        $('#productForm').html(data);
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error('AJAX error:', textStatus, errorThrown);
-      }
-    });
-  });
-});
-</script>
+      <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var productLinks = document.querySelectorAll('.product-link');
+        productLinks.forEach(function(link) {
+          link.addEventListener('click', function() {
+            var productId = this.getAttribute('data-product-id');
+            var productBrand = this.getAttribute('data-product-brand');
+            var productName = this.getAttribute('data-product-name');
+      
+            // Set the values in the modal
+            document.getElementById('modalProductIdInput').value = productId; // Assuming you have this input in your modal
+            document.getElementById('productBrand').textContent = productBrand;
+            document.getElementById('productName').textContent = productName;
+          });
+        });
+      });
+      </script>
 
     <script>
       $(document).ready(function() {
@@ -302,27 +275,57 @@ $(document).ready(function() {
       });
     </script>
 
+
 <script>
-        $(document).ready(function() {
-          $('#productModal').on('show.bs.modal', function (event) {
-            let button = $(event.relatedTarget); // Button that triggered the modal
-            let orderId = button.data('id'); // Extract info from data-* attributes
-        
-            // Make an AJAX request to fetch the order details
-            $.ajax({
-              url: 'get_order_details.php',
-              type: 'GET',
-              data: {id: orderId},
-              success: function (data) {
-                $('#productModal .modal-body').html(data);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error('AJAX error:', textStatus, errorThrown);
-              }
-            });
+$(document).ready(function(){
+  $('#save-changes').click(function(){
+    var productId = $('#modalProductIdInput').val();
+    var newStockLevel = $('#newStockLevel').val();
+
+    $.ajax({
+      url: 'update_stock.php',
+      type: 'POST',
+      data: {
+        product_id: productId,
+        newStockLevel: newStockLevel
+      },
+      success: function(response) {
+        var data = JSON.parse(response);
+        if(data.status === 'success') {
+          Swal.fire({
+            title: 'Success!',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+          }).then((result) => {
+            if (result.value) {
+              window.location.reload(); // Reload the page
+            }
           });
+          // Close the modal if you have one
+          $('#editstockModal').modal('hide');
+        } else {
+          Swal.fire({
+            title: 'Error!',
+            text: data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      },
+      error: function() {
+        Swal.fire({
+          title: 'Error!',
+          text: 'There was an error updating the stock.',
+          icon: 'error',
+          confirmButtonText: 'OK'
         });
-      </script>
+      }
+    });
+  });
+});
+</script>
+
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
