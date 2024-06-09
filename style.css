@@ -360,42 +360,6 @@ body{
     border-radius: 20px;
     color: var(--text-black-900);
   }
-
- .view-products{
-    background: var(--text-black-900);
-    color: var(--bg-black-900);
-    width: 280px;
-    height: 450px;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 1px;
- }
-
- .product-image{
-    width: 250px;
- }
-
- .product-brand{
-    margin: 0;
- }
-
- .product-title{
-    font-size: 20px;
-    margin: 0;
- }
-
- .product-price{
-    font-size: 50px;
-    margin: 0;
- }
-
- .product-boxs button{
-    background: var(--bg-black-100);
-    color: #f00;
-    padding: 5px;
-    border-radius: 10px;
- }
-
  .checkoutbtn{
     display: flex;
     align-content: center;
@@ -454,23 +418,39 @@ body{
     display: flex; /* Allow image and details side-by-side */
     margin-bottom: 10px;
     align-items: center;
-    color: var(--text-black-900);
+    color: var(--bg-black-100);
+    background: var(--text-black-900);
+    border-radius: 20px;
+    text-align: left;
+    margin: 20px;
+    padding: 10px;
   }
   
   .cart-item img {
-    width: 50px; /* Adjust image width as needed */
-    margin-right: 10px;
+    width: 150px; /* Adjust image width as needed */
+    margin-left: 20px;
   }
   
   .cart-item p {
     font-weight: bold; /* Style product title and price */
   }
 
-  .foot button{
-    background-color: var(--text-black-900);
-    padding: 10px;
-    border-radius: 20px;
+  .cart-item .decrement{
+    width: 25px;
+    background: #f00;
+    color: var(--text-black-900);
+    border-radius: 5px;
+    border: none;
   }
+
+  .cart-item .increment{
+    width: 25px;
+    background: #7ED957;
+    color: var(--text-black-900);
+    border-radius: 5px;
+    border: none;
+  }
+
 
   .checkout .product-box{
     background: var(--text-black-900);
@@ -492,6 +472,15 @@ body{
     color: white;
     width: 35px;
     font-size: 20px;
+}
+
+.checkouts{
+    border: none;
+    background: red;
+    color: var(--text-black-900);
+    padding: 10px;
+    width: 100px;
+    border-radius: 20px;
 }
 
 /* Eto din */
@@ -529,6 +518,30 @@ body{
     text-align: center;
 }
 
+.card-img-top{
+    width: 250px;
+    height: 200px;
+}
+
+.card-bodys{
+    color: var(--bg-black-100);
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.checkoutbtns{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkoutbtns .add-button{
+    background: red;
+    border-radius: 20px;
+    color: var(--text-black-900);
+    padding: 5px;
+}
+
 /* Transactions Sections */
 
 .transactions{
@@ -563,8 +576,17 @@ table thead{
     color: #FF5757;
 }
 
+table tbody{
+    color: var(--text-black-900);
+}
+
+table tfoot{
+    color: var(--text-black-900);
+}
+
 table a{
     color: var(--text-black-900);
+    text-decoration: none;
 }
 
 /* Stocks Sections */
@@ -742,7 +764,7 @@ table a{
 }
 /* Responsive */
 
-@media (max-width:1024px){
+@media only screen and (max-width:1024px){
     .aside{
         left: -270px;
     }

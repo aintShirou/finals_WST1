@@ -105,7 +105,7 @@
                             
                             <!-- Bago -->
                             <!-- <form class="order-form" method="post"> -->
-                              <div class="container-fluid">
+                            <div class="container-fluid">
                                 <div class="row">
                                   <div class="col-md-6">
                                     <div class="orders">
@@ -131,48 +131,51 @@
                                         </div>
                                         <div class="container-fluid my-5">
                                           <div class="card-container">
-                                          <?php 
-                                                $categoryId = isset($_GET['cat_id']) && $_GET['cat_id'] != '0' ? filter_input(INPUT_GET, 'cat_id', FILTER_SANITIZE_NUMBER_INT) : null;
-                                                $page = isset($_GET['page']) ? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 1;
-                                                $records_per_page = 2;
-                                                $products = $con->viewProducts1($categoryId, $page, $records_per_page);
-                                                foreach($products as $product) {
-                                              ?>                      
-                                            <div class="view-products">
-                                              <div class="product-boxs">
-                                                <img class="product-image" src="<?php echo $product['item_image']; ?>">
-                                                <p class="product-brand"><?php echo $product['product_brand']; ?></p>
-                                                <p class="product-title"><?php echo $product['product_name']; ?></p>
-                                                <h2 class="product-price">₱<?php echo $product['price']; ?></h2>
-                                              <div class="checkoutbtn">
-                                              <button type="button" class="add-button"
-                                              data-item-id="<?php echo $product['product_id']; ?>"
-                                              data-image-url="<?php echo $product['item_image']; ?>" 
-                                              data-brand="<?php echo $product['product_brand']; ?>" 
-                                              data-title="<?php echo $product['product_name']; ?>" 
-                                              data-price="<?php echo $product['price']; ?>">
-                                              Add to Cart
-                                            </button>
+                                            <?php 
+                                              $categoryId = isset($_GET['cat_id']) && $_GET['cat_id']!= '0'? filter_input(INPUT_GET, 'cat_id', FILTER_SANITIZE_NUMBER_INT) : null;
+                                              $page = isset($_GET['page'])? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 1;
+                                              $records_per_page = 2;
+                                              $products = $con->viewProducts1($categoryId, $page, $records_per_page);
+                                              foreach($products as $product) {
+                                          ?>                      
+                                            <div class="col-md-4">
+                                              <div class="card mb-4">
+                                                <img src="<?php echo $product['item_image'];?>" class="card-img-top" alt="<?php echo $product['product_name'];?>">
+                                                <div class="card-bodys">
+                                                  <h5 class="card-titles"><?php echo $product['product_name'];?></h5>
+                                                  <p class="card-texts"><?php echo $product['product_brand'];?></p>
+                                                  <h2 class="card-prices">₱<?php echo $product['price'];?></h2>
+                                                  <div class="checkoutbtns">
+                                                    <button type="button" class="add-button"
+                                                    data-item-id="<?php echo $product['product_id'];?>"
+                                                    data-image-url="<?php echo $product['item_image'];?>" 
+                                                    data-brand="<?php echo $product['product_brand'];?>" 
+                                                    data-title="<?php echo $product['product_name'];?>" 
+                                                    data-price="<?php echo $product['price'];?>">
+                                                    Add to Cart
+                                                  </button>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
-                                          </div>
-                                          <?php
-                                          }
+                                            <?php
+                                              }
                                           ?>
+                                          </div>
                                         </div>
-                                      </div>
                                     </div>
                                     <div class="pagination">
                                     <?php
-                      $total_products = $con->getProductCount($categoryId);
-                      $total_pages = ceil($total_products / $records_per_page);
+                                        $total_products = $con->getProductCount($categoryId);
+                                        $total_pages = ceil($total_products / $records_per_page);
 
-                      for ($i = 1; $i <= $total_pages; $i++) {
-                          $class = ($page == $i) ? 'class="active"' : '';
-                          echo "<a href='product.php?cat_id=$categoryId&page=$i' $class>$i</a> ";
-                      }
-                    ?>
-                  </div>
+                                        for ($i = 1; $i <= $total_pages; $i++) {
+                                            $class = ($page == $i) ? 'class="active"' : '';
+                                            echo "<a href='product.php?cat_id=$categoryId&page=$i' $class>$i</a> ";
+                                        }
+                                      ?>
+                                    </div>
+                                
                                   </div>
 
                                   <div class="col-md-6">
@@ -207,7 +210,7 @@
                                           <div id="changeDisplay">Change: ₱0.00</div>
                                           <input type="hidden" id="cartItemsInput" name="cart_items">
                                           <!-- Your original form's submit button -->
-                                          <button type="submit" id="submitButton" name="checkout">Checkout</button>
+                                          <button class="checkouts" type="submit" id="submitButton" name="checkout">Checkout</button>
                                         </div>
                                       </form>
                                       <!-- End of your new form -->
@@ -362,35 +365,34 @@ document.getElementById('stockCategory').addEventListener('change', function() {
 
   xhr.onload = function() {
     if (this.status == 200) {
-      var products = JSON.parse(this.responseText);
-      var output = '';
-      if (products.length > 0) {
-        for(var i in products) {
-          output += '<div class="view-products">' +
-                '<div class="product-boxs">' +
-                '<img class="product-image" src="' + products[i].item_image + '">' +
-                '<p class="product-brand">' + products[i].product_brand + '</p>' +
-                '<p class="product-title">' + products[i].product_name + '</p>' +
-                '<h2 class="product-price">₱' + products[i].price + '</h2>' +
-                '<div class="checkoutbtn">' +
-                '<button type="button" class="add-button" ' +
-                'data-item-id="' + products[i].product_id + '" ' +
-                'data-image-url="' + products[i].item_image + '" ' +
-                'data-brand="' + products[i].product_brand + '" ' +
-                'data-title="' + products[i].product_name + '" ' +
-                'data-price="' + products[i].price + '">' +
-                'Add to Cart</button>' +
-                '</div></div></div>';
+        var products = JSON.parse(this.responseText);
+        var output = '';
+        if (products.length > 0) {
+            for (var i in products) {
+                output += '<div class="card mb-4">' +
+                    '<img src="' + products[i].item_image + '" class="card-img-top" alt="' + products[i].product_name + '">' +
+                    '<div class="card-bodys">' +
+                    '<h5 class="card-titles">' + products[i].product_name + '</h5>' +
+                    '<p class="card-texts">' + products[i].product_brand + '</p>' +
+                    '<h2 class="card-prices">₱' + products[i].price + '</h2>' +
+                    '<div class="checkoutbtns">' +
+                    '<button type="button" class="add-button" ' +
+                    'data-item-id="' + products[i].product_id + '" ' +
+                    'data-image-url="' + products[i].item_image + '" ' +
+                    'data-brand="' + products[i].product_brand + '" ' +
+                    'data-title="' + products[i].product_name + '" ' +
+                    'data-price="' + products[i].price + '">Add to Cart</button>' +
+                    '</div></div></div>';
+            }
+        } else {
+            output = '<p>No products found.</p>';
         }
-      } else {
-        output = '<p>No products found.</p>';
-      }
-      document.querySelector('.card-container').innerHTML = output;
+        document.querySelector('.card-container').innerHTML = output;
     } else {
-      // Handle errors
-      document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
+        // Handle errors
+        document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
     }
-  };
+};
 
   xhr.onerror = function() {
     // Handle network errors
