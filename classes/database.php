@@ -215,7 +215,9 @@ function viewOrdersExcel(){
                 (orders.quantity_ordered * product.price) as total_price 
             FROM
                 orders
-                INNER JOIN product ON orders.product_id = product.product_id";
+                INNER JOIN product ON orders.product_id = product.product_id
+                ORDER BY
+                orders.order_id";
     
     $stmt = $con->prepare($sql);
     $stmt->execute();
