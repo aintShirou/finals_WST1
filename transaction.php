@@ -69,7 +69,7 @@
                         <div class="transactions">
                             <div class="title-trans">
                               <h2>Transaction</h2>
-                              <button class="btn btn-danger">Print</button>
+                              <button class="btn btn-danger" onclick="exportToExcel()">Export to Excel</button>
                             </div>
                             <!-- Table for Transaction -->
                             <div class="table-trans">
@@ -123,7 +123,7 @@
                       <div class="order-recent">
                         <div class="title-trans">
                           <h2>Recent Order</h2>
-                          <button class="btn btn-danger">Print</button>
+                          <button class="btn btn-danger" onclick="exportOrderToExcel()">Print</button>
                         </div>
                       <!-- Recent Purchases -->
                       <div class="recent-pur">
@@ -285,6 +285,55 @@
         });
       </script>
   
+  <script>
+    function exportToExcel() {
+      fetch('export_transaction.php')
+        .then(response => {
+          if (response.ok) return response.blob();
+          throw new Error('Network response was not ok.');
+        })
+        .then(blob => {
+          // Create a new URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          // Create a new <a> element for the download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'transactions.csv'; // Specify the file name for download
+          document.body.appendChild(a); // Append <a> to <body>
+          a.click(); // Simulate click on <a> to start download
+          window.URL.revokeObjectURL(url); // Clean up URL object
+          a.remove(); // Remove <a> from <body>
+        })
+        .catch(error => {
+          console.error('There was an error:', error);
+        });
+    }
+  </script>
+
+<script>
+    function exportOrderToExcel() {
+      fetch('export_orders.php')
+        .then(response => {
+          if (response.ok) return response.blob();
+          throw new Error('Network response was not ok.');
+        })
+        .then(blob => {
+          // Create a new URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          // Create a new <a> element for the download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'orders.csv'; // Specify the file name for download
+          document.body.appendChild(a); // Append <a> to <body>
+          a.click(); // Simulate click on <a> to start download
+          window.URL.revokeObjectURL(url); // Clean up URL object
+          a.remove(); // Remove <a> from <body>
+        })
+        .catch(error => {
+          console.error('There was an error:', error);
+        });
+    }
+  </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>

@@ -178,6 +178,51 @@ DESC LIMIT :start_from, :records_per_page");
     return $result;
 }
 
+
+function exportAllTransactions() {
+    $con = $this->opencon();
+    $sql = "SELECT
+        orders.customer_name,
+        transactions.trans_id,
+        transactions.payment_method,
+        DATE(transactions.paymentdate) AS paymentdate,
+        COUNT(orders.order_id) AS total_orders,
+        SUM(transactions.payment_total) AS total_purchases
+    FROM
+        transactions
+    INNER JOIN orders ON transactions.order_id = orders.order_id
+    GROUP BY
+        orders.customer_name,
+        transactions.paymentdate
+    ORDER BY
+        `transactions`.`paymentdate` DESC";
+    
+    $stmt = $con->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
+
+
+function viewOrdersExcel(){
+    $con = $this->opencon();
+    $sql = "SELECT
+                orders.order_id,
+                CONCAT(product.product_brand, ' ', product.product_name) as product,
+                orders.customer_name,
+                orders.quantity_ordered as quantity, 
+                product.price as unit_price, 
+                (orders.quantity_ordered * product.price) as total_price 
+            FROM
+                orders
+                INNER JOIN product ON orders.product_id = product.product_id";
+    
+    $stmt = $con->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
+
 function getTotalTransactions(){
     $con = $this->opencon();
     $stmt = $con->prepare("SELECT COUNT(*) as total FROM (
