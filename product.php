@@ -83,6 +83,8 @@
         <div class="main-content">
     
             <section class="product section" id="product">
+
+            <?php include('includes/header.php'); ?>
     
                 <div class="title-product">
                   <h1>Products</h1>
@@ -207,7 +209,7 @@
                                         <div class="foot">
                                           <h3>Total</h3>
                                           <h2 id="total">₱ 0.00</h2>
-                                          <div id="changeDisplay">Change: ₱0.00</div>
+                                          <h2 id="changeDisplay">Change: ₱0.00</h2>
                                           <input type="hidden" id="cartItemsInput" name="cart_items">
                                           <!-- Your original form's submit button -->
                                           <button class="checkouts" type="submit" id="submitButton" name="checkout">Checkout</button>
@@ -231,6 +233,8 @@
         </div>
 
     </div>
+
+    <?php include("modal.php")?>
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -457,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
               // Handle server response here
               if(data.success) {
-                Swal.fire('Success!', 'Your form has been submitted.', 'success')
+                Swal.fire('Success!', 'Your transaction has been recorded.', 'success')
                 .then(() => {
                   window.location.reload(); // Reload the page after showing success message
                 });

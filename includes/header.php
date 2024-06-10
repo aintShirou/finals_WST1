@@ -1,8 +1,5 @@
 <header class="header">
     <nav class="navbar navbar-expand-lg">
-      <a class="navbar-brand" href="#">
-        <img src="import/Dynrax Web Finals.png" alt="Dynrax Auto Supply" height="40">
-      </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -13,7 +10,7 @@
               Welcome, Username
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Add Admin</a>
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addaccountModal">Add Admin</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">Logout</a>
             </div>
@@ -22,3 +19,4 @@
       </div>
     </nav>
   </header>
+  

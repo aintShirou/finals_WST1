@@ -24,7 +24,7 @@ require_once('classes/database.php');
     <title>Dynrax Auto Supply</title>
 
     <!-- Style -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap-4.5.3-dist/css/bootstrap.css">
@@ -38,39 +38,11 @@ require_once('classes/database.php');
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="header">
-    <nav class="navbar navbar-expand-lg">
-      <a class="navbar-brand" href="#">
-        <img src="import/Dynrax Web Finals.png" alt="Dynrax Auto Supply" height="40">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Welcome, Username
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Add Admin</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Logout</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
-    <!-- End Header -->
-
     <!-- Main Container -->
 
     <div class="main-container">
 
       <!-- Aside Navbar -->
-      
       <div class="aside">
         <div class="navbar-logo">
             <a href="index.php"><img src="import/Dynrax Web Finals.png"></a>
@@ -87,14 +59,15 @@ require_once('classes/database.php');
             <li><a href="stock.php" style="text-decoration:none;"><i class="bx bx-store"></i>Stock</a></li>
             <li><a href="sale.php" style="text-decoration:none;"><i class="bx bx-dollar"></i>Total Sale</a></li>
         </ul>
-    
-      </div>
+    </div>
 
       <!-- Main Content -->
       <div class="main-content">
 
         <!-- Home Section -->
         <section class="home active section" id="home">
+
+        <?php include('includes/header.php'); ?>
 
             <!-- Analytics -->
 
@@ -148,32 +121,29 @@ require_once('classes/database.php');
                   <div class="titles-home">
                     <h3>Low Quantity</h3>
                   </div>
-
-                  <div class="container-fluid">
+                  <div class="lowstock">
+                    <div class="container-fluid">
                     <div class="card-container">
-                      <div class="lowstock">
-                            <?php
-                              $lowstocks = $con->lowStocks();
-                              foreach($lowstocks as $lowstock){
-                                ?>
-                            <div class="product-card">
-                                <div class="productimgs">
-                                <img class="product-images" src="<?php echo $lowstock['item_image'];?>" alt="Product Image">
-                                </div>
-                                <div class="product-details">
-                                    <h4 class="product-names"><?php echo $lowstock['product_brand'];?></h4>
-                                    <h4 class="product-name"><?php echo $lowstock['product_name'];?></h4>
-                                    <p class="product-quantitys">Only <strong><?php echo $lowstock['stocks'];?></strong> left in stock!</p>
-                                    <input type="hidden" name="product_id" value="<?php echo $lowstock['product_id'];?>">
-                                    <a class="product-link" href="#" data-toggle="modal" data-target="#editstockModal" data-product-id="<?php echo $lowstock['product_id']; ?>" data-product-brand="<?php echo $lowstock['product_brand']; ?>" data-product-name="<?php echo $lowstock['product_name']; ?>">Add Stock</a>
-                                </div>
-                            </div>
-                            <?php
-                              }
-                              ?>
-
-                      </div>
+                      <?php
+                      $lowstocks = $con->lowStocks();
+                      foreach($lowstocks as $lowstock){
+                        ?>
+                    <div class="product-card">
+                        <div class="productimgs">
+                        <img class="product-images" src="<?php echo $lowstock['item_image'];?>" alt="Product Image">
+                        </div>
+                        <div class="product-details">
+                            <h4 class="product-names"><?php echo $lowstock['product_brand'];?></h4>
+                            <h4 class="product-name"><?php echo $lowstock['product_name'];?></h4>
+                            <p class="product-quantitys">Only <strong><?php echo $lowstock['stocks'];?></strong> left in stock!</p>
+                            <a class="product-link" href="#" data-toggle="modal" data-target="#editstockModal" data-product-id="<?php echo $lowstock['product_id']; ?>" data-product-brand="<?php echo $lowstock['product_brand']; ?>" data-product-name="<?php echo $lowstock['product_name']; ?>">Add Stock</a>
+                        </div>
                     </div>
+                    <?php
+                      }
+                      ?>
+                    </div>
+                  </div>
                   </div>
 
                 </div>
@@ -184,11 +154,11 @@ require_once('classes/database.php');
                   <div class="titles-home">
                     <h3>Top Product</h3>
                   </div>
+                  <div class="topproduct">
                   <div class="container-fluid">
                     <div class="card-container">
-                      <div class="topproduct">
-                        <div class="row low-stock-products">
-                          <div class="col-md-6 low-stock-product-card">
+                        <div class="row">
+                          <div class="col-md-6">
                             <div class="product-card">
                                <?php
                                 $top = $con->topProduct();
@@ -202,8 +172,8 @@ require_once('classes/database.php');
                             </div>
                           </div>
                         </div>
-                      </div>
                     </div>
+                  </div>
                   </div>
                 </div>
                 </div>
@@ -227,8 +197,8 @@ require_once('classes/database.php');
       </div>
       <div class="modal-body" style="color: #fff;">
         <div id="productDetails">
-          <h6>Brand: <span id="productBrand"></span></h6>
-          <h6>Name: <span id="productName"></span></h6>
+          <h6>Brand: <span id="productnames"></span></h6>
+          <h6>Name: <span id="productname"></span></h6>
         </div>
         <form method="post" id="stockForm">
           <!-- Hidden input for product ID -->
@@ -248,6 +218,43 @@ require_once('classes/database.php');
   </div>
 </div>
 
+<!-- ADD Account -->
+
+<div class="modal fade" id="addaccountModal" tabindex="-1" aria-labelledby="addaccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content bg-dark">
+            <div class="modal-header" style="color: #fff;">
+              <h5 class="modal-title" id="addaccountModalLabel">Add Account</h5>
+            </div>
+            <form id="editProductForm" method="post">
+              <div class="modal-body" style="color: #fff;">
+                <input type="hidden" id="editProductId" name="id">
+                <div class="mb-3">
+                  <label for="editProductBrand" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="editProductBrand" name="editProductBrand">
+                </div>
+                <div class="mb-3">
+                  <label for="editProductName" class="form-label">UserName</label>
+                  <input type="text" class="form-control" id="editProductName" name="editProductName">
+                </div>
+                <div class="mb-3">
+                  <label for="editProductPrice" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="editProductPrice" name="editProductPrice">
+                </div>
+                <div class="mb-3">
+                  <label for="editProductQuantity" class="form-label">Confirm Password</label>
+                  <input type="password" class="form-control" id="editProductQuantity" name="editProductQuantity">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger" id="saveChangesButton" name="saveChangesButton">Add Account</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="./package/dist/sweetalert2.min.js"></script>
 
@@ -261,9 +268,9 @@ require_once('classes/database.php');
             var productName = this.getAttribute('data-product-name');
       
             // Set the values in the modal
-            document.getElementById('modalProductIdInput').value = productId; // Assuming you have this input in your modal
-            document.getElementById('productBrand').textContent = productBrand;
-            document.getElementById('productName').textContent = productName;
+            document.getElementById('modalProductIdInput').value = productId; 
+            document.getElementById('productnames').textContent = productBrand;
+            document.getElementById('productname').textContent = productName;
           });
         });
       });

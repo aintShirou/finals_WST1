@@ -32,13 +32,17 @@ body{
 }
 
 .section{
-    background: var(--bg-black-900);
+    background: var(--bg-black-100);
+    background-image: url(import/16.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
     min-height: 100vh;
     display: block;
     opacity: 1;
     padding: 0 30px;
     font-family: "Inter", sans-serif;
-    position: inherit;
+    position: absolute;
     left: 270px;
     top: 0;
     bottom: 0;
@@ -49,9 +53,17 @@ body{
     padding: 15px;
 }
 
-.header .navbar{
-    background: var(--bg-black-900);
+.header{
+    background: transparent;
     font-size: 25px;
+}
+
+.header a:hover{
+    color: #FF5757;
+}
+
+.header .dropdown-item:hover{
+    background: transparent;
 }
 
 .nav-link{
@@ -184,7 +196,13 @@ body{
 .box {
     background-color: var(--bg-black-100);
     border-radius: 10px;
+    border: var(--text-black-900) solid 1px;
     padding:20px;
+    transition: 0.5s;
+}
+
+.box:hover{
+    box-shadow:0px 0px 20px #f00;
 }
 
 .box h3{
@@ -219,6 +237,7 @@ body{
     height: fit-content;
     padding: 20px;
     border-radius: 20px;
+    border: var(--text-black-900) solid 1px;
 }
 
 .low-stock-products {
@@ -239,6 +258,11 @@ body{
     padding: 10px;
     display: inline-block;
     width: 50rem;
+    transition: 0.5s;
+  }
+
+  .product-card:hover{
+    box-shadow:0px 0px 20px #f00;
   }
   
   .product-image {
@@ -330,6 +354,7 @@ body{
     height: fit-content;
     padding: 20px;
     border-radius: 20px;
+    border: var(--text-black-900) solid 1px;
 }
 
   .products-brand{
@@ -359,35 +384,16 @@ body{
 .products {
     border-radius: 20px;
     color: var(--text-black-900);
+    border: var(--text-black-900) solid 1px;
+    background: var(--bg-black-100);
   }
+
  .checkoutbtn{
     display: flex;
     align-content: center;
     justify-content: center;
  }
 
-.add-cart-button{
-    margin-top: 35px;
-}
-
-.add-cart-button button{
-    border-radius: 20px;
-}
-
-.add-cart-button button {
-    padding: 10px 20px; /* Adjust button padding */
-    font-size: 16px; /* Adjust button font size */
-    background: var(--bg-black-100); /* Change button background color */
-    color: red; /* Change button text color */
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.add-cart-button button:hover {
-    background: red; /* Change button background color on hover */
-    color: var(--bg-black-900);
-}
 
 .checkout{
     text-align: center;
@@ -491,6 +497,7 @@ body{
     padding: 10px;
     border-radius: 20px;
     height: fit-content;
+    border: var(--text-black-900) solid 1px;
 }
 
 .checkout{
@@ -499,6 +506,7 @@ body{
     padding: 10px;
     border-radius: 20px;
     height: fit-content;
+    border: var(--text-black-900) solid 1px;
 }
 
 /* Hangang dito */
@@ -551,6 +559,17 @@ body{
     border-radius: 20px;
     text-align: center;
     margin-bottom: 10px;
+    border: var(--text-black-900) solid 1px;
+}
+
+.title-trans{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-trans button{
+    width: fit-content;
 }
 
 .transactions table{
@@ -565,6 +584,7 @@ body{
     border-radius: 20px;
     text-align: center;
     margin-bottom: 10px;
+    border: var(--text-black-900) solid 1px;
 }
 
 .order-recent table{
@@ -598,6 +618,7 @@ table a{
     margin-top: 25px;
     border-radius: 20px;
     margin-bottom: 25px;
+    border: var(--text-black-900) solid 1px;
 }
 
 .stockhead{
@@ -607,24 +628,19 @@ table a{
 .search-cat{
     display: flex;
     justify-content: center;
-    align-items: end;
-    padding-left: 400px;
+    align-items: center;
+    margin: 10;
+    padding-left: 8.5rem;
 }
 
 .search-bar {
-    flex: 1;
-    margin-left: 15px;
-    max-width: 35rem;
-    margin-bottom: 15px;
+    margin: 15px;
+    width: 35rem;
 }
 
-.stock-category {
-    flex: 5;
-    margin-left: 15px;
-    max-width: 10rem;
-    margin-bottom: 15px;
+.stock-category{
+    width: fit-content;
 }
-  
 
 .card {
     max-width: 15rem;
@@ -673,12 +689,38 @@ table a{
     width: 100%;
 }
 
+.stockhead{
+    border-bottom: 1px solid var(--text-black-900);
+}
+
+.search-cat{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-left: 400px;
+}
+
+.search-bar {
+    flex: 1;
+    margin-left: 15px;
+    max-width: 35rem;
+    margin-bottom: 15px;
+}
+
+.stock-category {
+    flex: 5;
+    margin-left: 15px;
+    max-width: 10rem;
+    margin-bottom: 15px;
+}
+
 .select-option{
     display: flex;
     justify-content: end;
     align-content: end;
     margin-top: 25px;
     margin-right: 25px;
+    margin-bottom: 10px;
 }
 
   /* Sales Section */
@@ -693,16 +735,18 @@ table a{
     padding: 20px;
     background-color: var(--bg-black-100);
     border-radius: 20px;
-    height: 44.5rem;
+    height: 38.5rem;
     display: flex;
     align-items: center;
     justify-items: center;
+    border: var(--text-black-900) solid 1px;
 }
 
 .item-sales-pie{
     border-radius: 20px;
     padding: 20px;
     background-color: var(--bg-black-100);
+    border: var(--text-black-900) solid 1px;
 }
 
 .total-income, .inquiry-succsess, .new-customer, .complete-order{
@@ -712,13 +756,14 @@ table a{
     padding: 25px;
     margin: 20px;
     border-radius: 20px;
+    border: var(--text-black-900) solid 1px;
 }
 
 .total-income h4,
 .inquiry-succsess h4,
 .new-customer h4,
 .complete-order h4 {
-    font-size: 15px;
+    font-size: 20px;
 }
 
 .total-income i,
@@ -774,7 +819,7 @@ table a{
     }
 
     .aside .navbar-toggle{
-        display: flex;
+        display: inherit;
         left: 30px;
     }
 
@@ -782,9 +827,113 @@ table a{
         left: 0;
     }
 
-    .welcome-user{
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .box{
+        height: 15rem;
     }
+
+    .box h3{
+        font-size: 25px;
+    }
+
+    .box h1{
+        font-size: 45px;
+    }
+
+    .search-cat{
+        padding-left: 0;
+    }
+}
+
+@media only screen and (max-width:1728px) {
+    
+    .box{
+        height: 15rem;
+    }
+
+    .box h3{
+        font-size: 25px;
+    }
+
+    .box h1{
+        font-size: 45px;
+    }
+
+}
+
+@media only screen and (max-width:1260px) {
+
+    .aside{
+        left: -270px;
+    }
+
+    .aside.open{
+        left: 0;
+    }
+
+    .aside .navbar-toggle{
+        display: inherit;
+        left: 30px;
+    }
+
+    .section{
+        left: 0;
+    }   
+    
+}
+
+@media only screen and (max-width:1830px) {
+
+    .item-sales-chart{
+        height: fit-content;   
+        margin-bottom: 10px; 
+    }
+
+    .item-sales-pie canvas{
+        width: 10rem;
+    }
+    
+}
+
+@media only screen and (max-width:1280px) {
+    
+    .search-cat{
+        padding-left: 0;
+    }
+
+}
+
+@media only screen and (max-width:1106px) {
+    
+    .box{
+        height: 16rem;
+    }
+
+    .box h3{
+        font-size: 20px;
+    }
+
+    .box h1{
+        font-size: 40px;
+    }
+
+    .search-cat{
+        padding-left: 0;
+    }
+
+}
+
+@media only screen and (max-width:766px) {
+
+    .box{
+        margin: 10px;
+    }
+
+    .box h3{
+        font-size: 35px;
+    }
+
+    .box h1{
+        font-size: 55px;
+    }
+
 }

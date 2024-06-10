@@ -383,4 +383,8 @@ GROUP BY
     }
 
 
+    function newCustomer(){
+        
+    }
+
 }

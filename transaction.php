@@ -56,6 +56,8 @@
 
             <section class="transaction section" id="transaction">
 
+            <?php include('includes/header.php'); ?>
+
                 <div class="title-product">
                   <h1>Transactions</h1>
                 </div>
@@ -65,7 +67,10 @@
                     <div class="col-md-6">
                         <!-- Transaction of the Customer -->
                         <div class="transactions">
-                            <h2>Transaction</h2>
+                            <div class="title-trans">
+                              <h2>Transaction</h2>
+                              <button class="btn btn-danger">Print</button>
+                            </div>
                             <!-- Table for Transaction -->
                             <div class="table-trans">
                               <table class="table">
@@ -93,7 +98,7 @@
                                   foreach($trans as $transaction){
                                   ?>
                                   <tr>
-                                    <td><?php echo $counter_trans--;?></td>
+                                    <td><a href="#" data-toggle="modal" data-target="#ORModal"><?php echo $counter_trans--;?></a></td>
                                     <td><?php echo ucwords($transaction['customer_name']);?></td>
                                     <td><?php echo ucwords($transaction['payment_method']);?></td>
                                     <td><?php echo ucwords($transaction['paymentdate']);?></td>
@@ -116,49 +121,52 @@
                     </div>
                     <div class="col-md-6">
                       <div class="order-recent">
-    <h2>Recent Purchase</h2>
-    <!-- Recent Purchases -->
-    <div class="recent-pur">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $records_per_page = 14;
-                $order_page = isset($_GET['order_page']) ? $_GET['order_page'] : 1;
-                $start_from_order = ($order_page > 1) ? ($order_page-1) * $records_per_page : 0;
+                        <div class="title-trans">
+                          <h2>Recent Order</h2>
+                          <button class="btn btn-danger">Print</button>
+                        </div>
+                      <!-- Recent Purchases -->
+                      <div class="recent-pur">
+                          <table class="table">
+                              <thead>
+                                  <tr>
+                                      <th>Order ID</th>
+                                      <th>Product</th>
+                                      <th>Price</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <?php
+                                  $records_per_page = 14;
+                                  $order_page = isset($_GET['order_page']) ? $_GET['order_page'] : 1;
+                                  $start_from_order = ($order_page > 1) ? ($order_page-1) * $records_per_page : 0;
 
-                $total_orders = $con->getTotalOrders();
-                $counter_order = $total_orders - (($order_page-1) * $records_per_page);
+                                  $total_orders = $con->getTotalOrders();
+                                  $counter_order = $total_orders - (($order_page-1) * $records_per_page);
 
-                $orders = $con->viewOrders($start_from_order, $records_per_page);
-                foreach($orders as $order){
-                ?>
-                <tr>
-                    <td><a href="#" data-toggle="modal" data-target="#productModal" data-id="<?php echo $order['order_id'];?>"><?php echo ucwords($order['order_id']);?></a></td>
-                    <td><?php echo ucwords($order['product']);?></td>
-                    <td>PHP <?php echo ucwords($order['total_price']);?></td>
-                </tr>
-                <?php
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
-    $total_order_pages = ceil($total_orders / $records_per_page);
+                                  $orders = $con->viewOrders($start_from_order, $records_per_page);
+                                  foreach($orders as $order){
+                                  ?>
+                                  <tr>
+                                      <td><a href="#" data-toggle="modal" data-target="#productModal" data-id="<?php echo $order['order_id'];?>"><?php echo ucwords($order['order_id']);?></a></td>
+                                      <td><?php echo ucwords($order['product']);?></td>
+                                      <td>PHP <?php echo ucwords($order['total_price']);?></td>
+                                  </tr>
+                                  <?php
+                                  }
+                                  ?>
+                              </tbody>
+                          </table>
+                      </div>
+                        <?php
+                        $total_order_pages = ceil($total_orders / $records_per_page);
 
-    for ($i=1; $i<=$total_order_pages; $i++) {
-      echo "<a href='transaction.php?order_page=".$i."'>".$i."</a> ";
-  }
-    ?>
-</div>
-                </div>
+                        for ($i=1; $i<=$total_order_pages; $i++) {
+                          echo "<a href='transaction.php?order_page=".$i."'>".$i."</a> ";
+                      }
+                        ?>
+                      </div>
+                    </div>
       
                         </div>
                     </div>
@@ -192,6 +200,65 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal for OR -->
+    <div class="modal fade" id="ORModal" tabindex="-1" aria-labelledby="ORModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark">
+      <div class="modal-header">
+        <h5 class="modal-title text-white" id="ORModalLabel">Order Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-white">
+        <p>Order Receipt:</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Product Brand</th>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>NAME</td>
+              <td>BRAND</td>
+              <td>₱1234</td>
+              <td>14</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Payment Method:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Cash:</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Change:</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php include("modal.php")?>
 
     <!-- AJAX Libary -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

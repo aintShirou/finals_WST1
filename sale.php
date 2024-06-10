@@ -15,7 +15,7 @@ require_once('classes/database.php');
     <title>Dynrax Auto Supply | Total Sales</title>
 
     <!-- Style -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap-4.5.3-dist/css/bootstrap.css">
@@ -51,13 +51,15 @@ require_once('classes/database.php');
 
             <section class="sales section" id="sales">
 
+            <?php include('includes/header.php'); ?>
+
                 <div class="title-product">
                   <h1>Total Sales</h1>
                 </div>
       
                 <div class="container-fluid">
                   <div class="row mr-1">
-                    <div class="col-md-7">
+                    <div class="col-lg-7 col-md-12 col-sm-12">
                         <div class="item-sales-title">
                           <h3>Items Sales</h3>
                         </div>
@@ -68,7 +70,7 @@ require_once('classes/database.php');
                           <canvas id="linechart"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-lg-5 col-md-12 col-m-12">
                       <div class="item-sales-title">
                         <h3>Sales By Category</h3>
                       </div>
@@ -79,28 +81,9 @@ require_once('classes/database.php');
                         <canvas id="pieschart"></canvas>
                       </div>
                     </div>
+
                   </div>
                   <div class="row mr-1">
-                    <div class="col md-3">
-                      <div class="total-income">
-                        <i class='bx bx-money'></i>
-      
-                        <!-- View Total income of the Store -->
-      
-                        <h4>Total Income</h4>
-                        <h1>₱15,000.00</h1>
-                      </div>
-                    </div>
-                    <div class="col md-3">
-                      <div class="inquiry-succsess">
-                        <i class='bx bx-line-chart' ></i>
-      
-                        <!-- View Total Success Rate?? -->
-      
-                        <h4>Inquiry Success Rate</h4>
-                        <h1>56%</h1>
-                      </div>
-                    </div>
                     <div class="col md-3">
                       <div class="new-customer">
                         <i class='bx bx-user' ></i>
@@ -109,6 +92,16 @@ require_once('classes/database.php');
       
                         <h4>Number of New Customers</h4>
                         <h1>42</h1>
+                      </div>
+                    </div>
+                    <div class="col md-3">
+                      <div class="total-income">
+                        <i class='bx bx-money'></i>
+      
+                        <!-- View Total income of the Store -->
+      
+                        <h4>Total Income</h4>
+                        <h1>₱15,000.00</h1>
                       </div>
                     </div>
                     <div class="col md-3">
@@ -132,6 +125,8 @@ require_once('classes/database.php');
         </div>
 
     </div>
+
+    <?php include("modal.php")?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>

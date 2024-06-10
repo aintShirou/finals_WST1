@@ -7,53 +7,6 @@ function asideSectionToggleBtn(){
     aside.classList.toggle("open"); // Toggle the "open" class on the aside element
 }
 
-// Products Section
-
-const ctxBar = document.getElementById('barchart');
-
-new Chart(ctxBar, {
-    type: 'bar',
-    data: {
-        labels: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-                label: 'Oil',
-                data: [3000, 2500, 3000, 5000, 4000, 3000, 3500],
-                borderColor: '#F1B356',
-                borderWidth: 2
-            },
-            {
-                label: 'Car Accesories',
-                data: [2000, 1500, 2000, 3000, 2000, 1500, 2400],
-                borderColor: '#A375FF',
-                borderWidth: 2
-            },
-            {
-                label: 'Fluid',
-                data: [1000, 500, 2000, 2500, 3000, 2000, 1000],
-                borderColor: '#7ED957',
-                borderWidth: 2
-            },
-            {
-                label: 'Auto Parts',
-                data: [900, 5500, 3000, 4500, 6200, 2100, 1600],
-                borderColor: '#FF66C4',
-                borderWidth: 2
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: 'white' // set legend text color to white
-                  }
-            }
-        }
-    }
-});
-
 // Sales Section
 
 const ctxLine1 = document.getElementById('linechart');

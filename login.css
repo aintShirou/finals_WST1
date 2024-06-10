@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+
+:root{
+    --bg-black-900:#111111;
+    --bg-black-100:#252525;
+    --bg-black-50:#e8dfec;
+    --text-black-900:#ffffff;
+    --text-black-700:#dfdfdf;
+    --text-black-100:#ffffff;
+    --text-black-200:#111111;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    font-size: 16px;
+    font-family: "Inter", sans-serif;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    list-style: none;
+}
+
+.main-content {
+    background: var(--bg-black-100);
+    background-image: url('import/16.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    width: 100%; 
+    height: 100vh;
+    position: fixed ;
+}
+
+.login{
+    background: #B81919;
+    width: 30rem;
+    height: 100vh;
+    transform: translateX(15rem);
+}
+
+.logo{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.login-text{
+    color: var(--text-black-900);
+    padding-right: 5rem;
+    padding-left: 5rem;
+}
+
+.login-text h2{
+    font-weight: 700;
+    font-size: 2.5rem;
+}
+
+.login-text{
+    font-size: 20px;
+}
+
+.login-picture{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(7rem);
+    margin:0;
+}
+
+.login-form{
+    background: #ffffff88;
+    padding: 25px;
+    border-radius: 20px;
+    width: 35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form h1{
+    text-align: center;
+    margin: 10px;
+    color: #B81919;
+}
+
+.login-form button{
+    width: 20rem;
+    border-radius: 20px;
+}
+
+@media only screen and (max-width:1314px) {
+    
+    .login{
+        display: none;
+    }
+
+    .login-form{
+        transform: translateY(15rem);
+    }
+
+}

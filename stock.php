@@ -168,6 +168,8 @@
 
             <section class="stock section" id="stock">
 
+            <?php include('includes/header.php'); ?>
+
                 <div class="title-product">
                   <h1>Stocks</h1>
                 </div>
@@ -198,7 +200,7 @@
                         <div class="col-md-2">
                         <div class="select-option">
                             <div class="dropdown">
-                              <button class="btn btn-secondary dropdown-toggle" type="button" id="stockCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <button class="btn btn-success dropdown-toggle" type="button" id="stockCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="bx bx-plus" style="font-size: 35px;"></i>
                               </button>
                             
@@ -208,7 +210,6 @@
                               </div>
                             </div>
                           </div>
-                        </div>
                       </div>
                     </div>
                 
@@ -396,6 +397,8 @@
           </div>
         </div>
       </div>
+
+      <?php include("modal.php")?>
 
       <script>
       function changeCategory() {
