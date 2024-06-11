@@ -1,5 +1,7 @@
 <?php 
 
+date_default_timezone_set('Asia/Manila');
+
 class database{
 
     function opencon(){
@@ -348,6 +350,27 @@ function getTotalSales(){
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+
+function getTotalSalesDifference(){
+    $con = $this->opencon();
+    
+    // Query to get the total sales
+    $stmtTotal = $con->query("SELECT SUM(payment_total) AS total FROM transactions");
+    $totalSales = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
+    
+    // Query to get this week's total sales
+    $stmtThisWeek = $con->query("SELECT SUM(payment_total) AS total_this_week 
+                                 FROM transactions 
+                                 WHERE DATE(paymentdate) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
+                                 AND DATE(paymentdate) <= CURDATE()");
+    $totalSalesThisWeek = $stmtThisWeek->fetch(PDO::FETCH_ASSOC)['total_this_week'];
+    
+    // Calculate the difference
+    $difference = $totalSales - $totalSalesThisWeek;
+    
+    return $difference;
+}
+
 function topProduct(){
     $con = $this->opencon();
     $stmt = $con->query("SELECT
@@ -429,9 +452,48 @@ GROUP BY
         return $count;
     }
 
+    function signup($firstname, $lastname, $email, $username, $password){
+        $con = $this->opencon();
+    
+        // Check if the user already exists
+        $checkUser = $con->prepare("SELECT * FROM admin WHERE email = ? OR user = ?");
+        $checkUser->execute([$email, $username]);
+        if ($checkUser->rowCount() > 0) {
+            // User exists
+            return ['status' => 'error', 'message' => 'User already exists.'];
+        }
+    
+        // Proceed with inserting the new user
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT); // Hash the password
+        $stmt = $con->prepare("INSERT INTO admin (first_name, last_name, email, user, pass) VALUES (?, ?, ?, ?, ?)");
+        if ($stmt->execute([$firstname, $lastname, $email, $username, $passwordHash])) {
+            // Success
+            return ['status' => 'success', 'message' => 'Account created successfully.'];
+        } else {
+            // Insertion failed
+            return ['status' => 'error', 'message' => 'Failed to create account.'];
+        }
+    }
 
-    function newCustomer(){
-        
+
+    function check($username, $password) {
+        // Open database connection
+        $con = $this->opencon();
+    
+        // Prepare the SQL query
+        $stmt = $con->prepare("SELECT * FROM admin WHERE user = ?");
+        $stmt->execute([$username]);
+    
+        // Fetch the user data as an associative array
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // If a user is found, verify the password
+        if ($user && password_verify($password, $user['pass'])) {
+            return $user;
+        }
+    
+        // If no user is found or password is incorrect, return false
+        return false;
     }
 
 }

@@ -3,6 +3,8 @@
 require_once('classes/database.php');
     $con = new database();  
    
+    session_start();
+
     ?>
 
 
@@ -126,7 +128,74 @@ require_once('classes/database.php');
 
     </div>
 
-    <?php include("modal.php")?>
+    <div class="modal fade" id="addaccountModal" tabindex="-1" aria-labelledby="addaccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark">
+      <div class="modal-header" style="color: #fff;">
+        <h5 class="modal-title" id="addaccountModalLabel">Add Account</h5>
+      </div>
+      <form id="addAccountForm" method="post">
+        <div class="modal-body" style="color: #fff;">
+          <div class="mb-3">
+            <label for="firstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstname" name="firstname">
+          </div>
+          <div class="mb-3">
+            <label for="lastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastname" name="lastname">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="username" class="form-label">UserName</label>
+            <input type="text" class="form-control" id="username" name="username">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger" id="addAccountButton" name="addAccountButton">Add Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+   
+<script>
+  $(document).ready(function() {
+    $('#addAccountForm').submit(function(e) {
+      e.preventDefault(); // Prevent default form submission
+  
+      var formData = $(this).serialize(); // Serialize form data
+  
+      $.ajax({
+        type: "POST",
+        url: "add_Account.php", // Server-side script to process the form
+        data: formData,
+        success: function(response) {
+          // Handle success. 'response' is what's returned from the server
+          alert("Account added successfully");
+          $('#addaccountModal').modal('hide'); // Hide the modal
+          // Optionally, refresh the page or part of it to show the new account
+        },
+        error: function() {
+          // Handle error
+          alert("An error occurred. Please try again.");
+        }
+      });
+    });
+  });
+</script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>

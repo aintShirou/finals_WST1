@@ -31,8 +31,9 @@ body{
     background: var(--bg-black-100);
     background-image: url('import/16.png');
     background-size: cover;
-    background-position: center;
+    background-position:center;
     background-repeat: no-repeat; 
+    font-family: "Inter", sans-serif;
     width: 100%; 
     height: 100vh;
     position: fixed ;
@@ -42,7 +43,7 @@ body{
     background: #B81919;
     width: 30rem;
     height: 100vh;
-    transform: translateX(15rem);
+    box-shadow:0px 0px 20px var(--text-black-900);
 }
 
 .logo{
@@ -95,7 +96,25 @@ body{
     border-radius: 20px;
 }
 
-@media only screen and (max-width:1314px) {
+.rempas{
+    display: flex;
+    justify-content: space-between;
+}
+
+a:link {
+    color: #B81919;
+  }
+
+
+@media only screen and (max-width:1110px){
+
+    .login-form{
+        width: 25rem;
+    }
+    
+}
+
+@media only screen and (max-width:991px) {
     
     .login{
         display: none;
@@ -103,6 +122,7 @@ body{
 
     .login-form{
         transform: translateY(15rem);
+        width: 25rem;
     }
 
 }

@@ -1,3 +1,29 @@
+<?php
+require_once('classes/database.php');
+$con = new database();
+
+session_start();
+
+if (isset($_POST['login'])) {
+        $username = $_POST['user'];
+        $password = $_POST['pass'];
+        $result = $con->check($username, $password);
+    
+        if ($result) {
+            $_SESSION['user'] = $result['user'];
+            $_SESSION['admin_id'] = $result['admin_id'];
+            
+            header('location:index.php');
+            exit();
+        } else {
+            $error = "Incorrect username or password. Please try again.";
+        }
+}
+
+  ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +33,7 @@
 
     <!-- CSS Links -->
     <!-- Style -->
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="login.css?v=<?php echo time(); ?>">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap-4.5.3-dist/css/bootstrap.css">
@@ -26,7 +52,7 @@
                 
                 <div class="row justify-content-center">
 
-                    <div class="col-lg-6 col-md-6 col-sm-0">
+                    <div class="col-lg-6 col-md-0 col-sm-0 d-flex justify-content-center align-items-center">
                      
 
                             <div class="login">
@@ -50,29 +76,37 @@
                      
                     </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
                      
                             <div class="formlogin">
                             <div class="login-form">
 
-                                <form>
+                                <form method="post">
 
                                     <h1>Login</h1>
 
                                     <!-- Email input -->
-                                    <div data-mdb-input-init class="form-outline mb-4">
-                                    <label class="form-label" for="form2Example1">Email address</label>
-                                    <input type="email" id="form2Example1" class="form-control" />
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="form2Example1">Username</label>
+                                        <input type="text" id="form2Example1" class="form-control" name="user"/>
                                     </div>
                                 
                                     <!-- Password input -->
-                                    <div data-mdb-input-init class="form-outline mb-4">
-                                    <label class="form-label" for="form2Example2">Password</label>
-                                    <input type="password" id="form2Example2" class="form-control" />
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="form2Example2">Password</label>
+                                        <input type="password" id="form2Example2" class="form-control" name="pass" />
+                                    </div>
+
+                                    <div class="rempas mb-5">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                            <label class="form-check-label" for="inlineCheckbox1">Remember me</label>
+                                        </div>
+                                        <a href="#" style="text-decoration:none;">Forget Password?</a>
                                     </div>
                                 
                                     <!-- Submit button -->
-                                    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block mb-4">Log in</button>
+                                    <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block mb-4" value="Log In" name="login"></input>
                                 </form>
 
                                 </div>

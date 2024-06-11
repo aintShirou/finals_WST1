@@ -3,6 +3,8 @@
 require_once('classes/database.php');
     $con = new database();  
 
+    session_start();
+
     
     if(isset($_POST['save'])){
       $product_id = $_POST['product_id']; 
@@ -80,7 +82,10 @@ require_once('classes/database.php');
                   <div class="box">
                     <h3>Total Sales</h3>
                     <h1><?php echo number_format($total['total'], 0);?><h1>
-                    <p><span>100%</span> +₱2.8k this week</p>
+                      <?php
+                        $difference = $con->getTotalSalesDifference();
+                        ?>
+                    <p><span>100%</span> +₱<?php echo $difference; ?> this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -221,39 +226,46 @@ require_once('classes/database.php');
 <!-- ADD Account -->
 
 <div class="modal fade" id="addaccountModal" tabindex="-1" aria-labelledby="addaccountModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content bg-dark">
-            <div class="modal-header" style="color: #fff;">
-              <h5 class="modal-title" id="addaccountModalLabel">Add Account</h5>
-            </div>
-            <form id="editProductForm" method="post">
-              <div class="modal-body" style="color: #fff;">
-                <input type="hidden" id="editProductId" name="id">
-                <div class="mb-3">
-                  <label for="editProductBrand" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="editProductBrand" name="editProductBrand">
-                </div>
-                <div class="mb-3">
-                  <label for="editProductName" class="form-label">UserName</label>
-                  <input type="text" class="form-control" id="editProductName" name="editProductName">
-                </div>
-                <div class="mb-3">
-                  <label for="editProductPrice" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="editProductPrice" name="editProductPrice">
-                </div>
-                <div class="mb-3">
-                  <label for="editProductQuantity" class="form-label">Confirm Password</label>
-                  <input type="password" class="form-control" id="editProductQuantity" name="editProductQuantity">
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger" id="saveChangesButton" name="saveChangesButton">Add Account</button>
-              </div>
-            </form>
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark">
+      <div class="modal-header" style="color: #fff;">
+        <h5 class="modal-title" id="addaccountModalLabel">Add Account</h5>
+      </div>
+      <form id="addAccountForm" method="post">
+        <div class="modal-body" style="color: #fff;">
+          <div class="mb-3">
+            <label for="firstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstname" name="firstname">
+          </div>
+          <div class="mb-3">
+            <label for="lastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastname" name="lastname">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="username" class="form-label">UserName</label>
+            <input type="text" class="form-control" id="username" name="username">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
           </div>
         </div>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger" id="addAccountButton" name="addAccountButton">Add Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="./package/dist/sweetalert2.min.js"></script>
@@ -331,6 +343,32 @@ $(document).ready(function(){
     });
   });
 });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('#addAccountForm').submit(function(e) {
+      e.preventDefault(); // Prevent default form submission
+  
+      var formData = $(this).serialize(); // Serialize form data
+  
+      $.ajax({
+        type: "POST",
+        url: "add_Account.php", // Server-side script to process the form
+        data: formData,
+        success: function(response) {
+          // Handle success. 'response' is what's returned from the server
+          alert("Account added successfully");
+          $('#addaccountModal').modal('hide'); // Hide the modal
+          // Optionally, refresh the page or part of it to show the new account
+        },
+        error: function() {
+          // Handle error
+          alert("An error occurred. Please try again.");
+        }
+      });
+    });
+  });
 </script>
 
 

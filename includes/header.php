@@ -7,16 +7,20 @@
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-              Welcome, Username
+              Welcome, <?php echo $_SESSION['user']; ?>
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addaccountModal">Add Admin</a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addaccountModal">Add Admin</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Logout</a>
+              <a class="dropdown-item" href="logout.php">Logout</a>
             </div>
           </li>
         </ul>
       </div>
     </nav>
   </header>
+  
+
+
+
   
