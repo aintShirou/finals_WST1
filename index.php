@@ -270,10 +270,11 @@ require_once('classes/database.php');
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
           </div>
+          <div id="passwordError" class="mb-3" style="color: red; display: none;"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="addAccountButton" name="addAccountButton">Add Account</button>
+          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
         </div>
       </form>
     </div>
@@ -360,11 +361,86 @@ $(document).ready(function(){
 
 <script>
   $(document).ready(function() {
+    // Initially disable the "Add Account" button
+    $('#submitBtn').prop('disabled', true);
+
+    // Validate individual input
+    function validateInput(input) {
+      if (input.name === 'password') {
+        return validatePassword(input);
+      } else if (input.name === 'confirmPassword') {
+        return validateConfirmPassword(input);
+      } else {
+        if (input.checkValidity()) {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          return true;
+        } else {
+          input.classList.remove("is-valid");
+          input.classList.add("is-invalid");
+          return false;
+        }
+      }
+    }
+
+    // Validate password
+    function validatePassword(passwordInput) {
+      const password = passwordInput.value;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      if (regex.test(password)) {
+        passwordInput.classList.remove("is-invalid");
+        passwordInput.classList.add("is-valid");
+        return true;
+      } else {
+        passwordInput.classList.remove("is-valid");
+        passwordInput.classList.add("is-invalid");
+        return false;
+      }
+    }
+
+    // Validate confirm password
+    function validateConfirmPassword(confirmPasswordInput) {
+      const passwordInput = document.querySelector("input[name='password']");
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (password === confirmPassword && password !== '') {
+        confirmPasswordInput.classList.remove("is-invalid");
+        confirmPasswordInput.classList.add("is-valid");
+        return true;
+      } else {
+        confirmPasswordInput.classList.remove("is-valid");
+        confirmPasswordInput.classList.add("is-invalid");
+        return false;
+      }
+    }
+
+    // Attach input event listeners to all form inputs for validation
+    $('input').on('input', function() {
+      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
+      $('#submitBtn').prop('disabled', !allValid);
+    });
+
+    // Prevent form submission on Enter key
+    document.addEventListener("keydown", (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+
+    // Form submission with AJAX
     $('#addAccountForm').submit(function(e) {
       e.preventDefault(); // Prevent default form submission
-  
+
+      // Check if all inputs are valid before submitting
+      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
+      if (!allValid) {
+        alert("Please correct the errors before submitting.");
+        return;
+      }
+
       var formData = $(this).serialize(); // Serialize form data
-  
+
       $.ajax({
         type: "POST",
         url: "add_Account.php", // Server-side script to process the form

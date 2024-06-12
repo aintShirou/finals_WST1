@@ -102,7 +102,7 @@ if (isset($_POST['login'])) {
                                             <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                                             <label class="form-check-label" for="inlineCheckbox1">Remember me</label>
                                         </div>
-                                        <a href="#" style="text-decoration:none;">Forget Password?</a>
+                                        <a href="forgot_password.php" style="text-decoration:none;">Forget Password?</a>
                                     </div>
                                 
                                     <!-- Submit button -->
