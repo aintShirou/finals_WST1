@@ -103,7 +103,7 @@
                                     <td><?php echo ucwords($transaction['customer_name']);?></td>
                                     <td><?php echo ucwords($transaction['payment_method']);?></td>
                                     <td><?php echo ucwords($transaction['paymentdate']);?></td>
-                                    <td>PHP <?php echo ucwords($transaction['total_purchases']);?></td>
+                                    <td>PHP <?php echo ($transaction['total_purchases']);?></td>
                                   </tr>
                                   <?php
                                   }
@@ -124,7 +124,7 @@
                       <div class="order-recent">
                         <div class="title-trans">
                           <h2>Recent Order</h2>
-                          <button class="btn btn-danger" onclick="exportOrderToExcel()">Print</button>
+                          <button class="btn btn-danger" onclick="exportOrderToExcel()">Export to Excel</button>
                         </div>
                       <!-- Recent Purchases -->
                       <div class="recent-pur">

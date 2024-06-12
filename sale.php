@@ -91,9 +91,11 @@ require_once('classes/database.php');
                         <i class='bx bx-user' ></i>
       
                         <!-- View Total Customers per Day -->
-      
+                        <?php
+                            $new_customer = $con->newCustomers();
+                          ?>
                         <h4>Number of New Customers</h4>
-                        <h1>42</h1>
+                        <h1><?php echo $new_customer['total_customers'];?></h1>
                       </div>
                     </div>
                     <div class="col md-3">
@@ -102,8 +104,11 @@ require_once('classes/database.php');
       
                         <!-- View Total income of the Store -->
       
-                        <h4>Total Income</h4>
-                        <h1>₱15,000.00</h1>
+                        <h4>Total Sales Today</h4>
+                        <?php
+                            $total_sales = $con->salesfortoday();
+                          ?>
+                        <h1>₱<?php echo $total_sales['total_sales'];?></h1>
                       </div>
                     </div>
                     <div class="col md-3">

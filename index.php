@@ -83,9 +83,10 @@ require_once('classes/database.php');
                     <h3>Total Sales</h3>
                     <h1><?php echo number_format($total['total'], 0);?><h1>
                       <?php
-                        $difference = $con->getTotalSalesDifference();
+                        $totalSalesThisWeek = $con->getTotalSalesDifference();
+                        $percentage = $con->getSalesPercentage();
                         ?>
-                    <p><span>100%</span> +₱<?php echo $difference; ?> this week</p>
+                    <p><span><?php echo round($percentage); ?>%</span> +₱<?php echo $totalSalesThisWeek; ?> this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -95,14 +96,26 @@ require_once('classes/database.php');
                   <div class="box">
                     <h3>Total Customers</h3>
                     <h1><?php echo $cust['total'];?></h1>
-                    <p><span>100%</span> +₱2.8k this week</p>
+                    <?php
+                       $weeklyCust = $con->weeklyCustomerCount();
+                       $custPercentage = $con->customerPercentage();
+                       ?>
+                    <p><span><?php echo round($custPercentage); ?>%</span> <?php echo $weeklyCust; ?> customers this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="box">
-                    <h3>Transaction History</h3>
-                    <h1>999</h1>
-                    <p><span>100%</span> +₱2.8k this week</p>
+                    <h3>Orders Completed</h3>
+                    <?php
+                      $orders = $con->totalOrdersCompleted();
+                      ?>
+                    <h1></span> <?php echo $orders; ?></h1>
+                    <?php
+                      $weeklyOrders = $con->weeklyOrders();
+                      $orderPercentage = $con->orderPercentage();
+                      ?>
+                    <p><span><?php echo round($orderPercentage); ?>%</span> <?php echo $weeklyOrders; ?> orders this week</p>
+
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -112,7 +125,7 @@ require_once('classes/database.php');
                   <div class="box">
                     <h3>Product in Stocks</h3>
                     <h1><?php echo $totalp['total'];?></h1>
-                    <p><span>100%</span> +₱2.8k this week</p>
+                    <!-- <p><span>100%</span> +₱2.8k this week</p> -->
                   </div>
                 </div>
               </div>

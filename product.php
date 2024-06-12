@@ -150,13 +150,14 @@
                                                   <h2 class="card-prices">₱<?php echo $product['price'];?></h2>
                                                   <div class="checkoutbtns">
                                                     <button type="button" class="add-button"
-                                                    data-item-id="<?php echo $product['product_id'];?>"
-                                                    data-image-url="<?php echo $product['item_image'];?>" 
-                                                    data-brand="<?php echo $product['product_brand'];?>" 
-                                                    data-title="<?php echo $product['product_name'];?>" 
-                                                    data-price="<?php echo $product['price'];?>">
-                                                    Add to Cart
-                                                  </button>
+                                                      data-item-id="<?php echo $product['product_id'];?>"
+                                                      data-image-url="<?php echo $product['item_image'];?>"
+                                                      data-brand="<?php echo $product['product_brand'];?>"
+                                                      data-title="<?php echo $product['product_name'];?>"
+                                                      data-price="<?php echo $product['price'];?>"
+                                                      data-stock="<?php echo $product['stocks'];?>"> <!-- Add this line -->
+                                                      Add to Cart
+                                                    </button>
                                                   </div>
                                                 </div>
                                               </div>
@@ -279,42 +280,45 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-  let cart = [];
-
-  // Listen for click events on the document
-  document.addEventListener('click', event => {
-    // Check if the clicked element is an "Add to Cart" button
-    if (event.target.matches('.add-button')) {
-      const itemId = event.target.dataset.itemId;
-      const itemPrice = parseFloat(event.target.dataset.price);
-      const itemTitle = event.target.dataset.title;
-      const itemBrand = event.target.dataset.brand;
-      const itemImageUrl = event.target.dataset.imageUrl;
-
-      // Check if the item is already in the cart
-      let existingItem = cart.find(item => item.product_id === itemId);
-
-      if (existingItem) {
-        // If the item is already in the cart, increment the quantity
-        existingItem.quantity++;
-      } else {
-        // If the item is not in the cart, add it
-        cart.push({
-          product_id: itemId,
-          price: itemPrice,
-          product_name: itemTitle,
-          product_brand: itemBrand,
-          item_image: itemImageUrl,
-          quantity: 1
-        });
-      }
-
-      // Update the cart display and total price
-      updateCartDisplay();
-    }
-  });
-
-
+      let cart = [];
+    
+      document.addEventListener('click', event => {
+        if (event.target.matches('.add-button')) {
+          const itemId = event.target.dataset.itemId;
+          const itemPrice = parseFloat(event.target.dataset.price);
+          const itemTitle = event.target.dataset.title;
+          const itemBrand = event.target.dataset.brand;
+          const itemImageUrl = event.target.dataset.imageUrl;
+          const itemStock = parseInt(event.target.dataset.stock); // Get the stock from the button
+    
+          if (itemStock <= 0) {
+            alert("This product is out of stock.");
+            return; // Exit if the product is out of stock
+          }
+    
+          let existingItem = cart.find(item => item.product_id === itemId);
+    
+          if (existingItem) {
+            if (existingItem.quantity < existingItem.stock) {
+              existingItem.quantity++;
+            } else {
+              alert("You've reached the maximum available stock for this product.");
+            }
+          } else {
+            cart.push({
+              product_id: itemId,
+              price: itemPrice,
+              product_name: itemTitle,
+              product_brand: itemBrand,
+              item_image: itemImageUrl,
+              quantity: 1,
+              stock: itemStock // Store the stock in the cart item
+            });
+          }
+    
+          updateCartDisplay();
+        }
+      });
     
       function updateCartDisplay() {
         const cartItemContainer = document.getElementById('cartItem');
@@ -360,11 +364,16 @@
         // Save the cart items to the hidden input field
         cartItemsInput.value = JSON.stringify(cart);
       }
+      
     
       function incrementItem(event) {
         const index = parseInt(event.target.dataset.index);
-        cart[index].quantity++;
-        updateCartDisplay();
+        if (cart[index].quantity < cart[index].stock) {
+          cart[index].quantity++;
+          updateCartDisplay();
+        } else {
+          alert("You've reached the maximum available stock for this product.");
+        }
       }
     
       function decrementItem(event) {
@@ -507,13 +516,13 @@ document.addEventListener("DOMContentLoaded", function() {
                   window.location.reload(); // Reload the page after showing success message
                 });
               } else {
-                Swal.fire('Error!', 'There was a problem with your submission.', 'error');
+                Swal.fire('Error!', 'There was a problem with your transaction.', 'error');
               }
             })
             .catch((error) => {
               // Handle any error that occurred during the fetch operation
               console.error('Error:', error);
-              Swal.fire('Error!', 'There was a problem with your submission.', 'error');
+              Swal.fire('Error!', 'There was a problem with your transaction.', 'error');
             });
           }
         });

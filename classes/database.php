@@ -352,23 +352,24 @@ function getTotalSales(){
 
 
 function getTotalSalesDifference(){
-    $con = $this->opencon();
-    
-    // Query to get the total sales
-    $stmtTotal = $con->query("SELECT SUM(payment_total) AS total FROM transactions");
-    $totalSales = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
-    
-    // Query to get this week's total sales
-    $stmtThisWeek = $con->query("SELECT SUM(payment_total) AS total_this_week 
-                                 FROM transactions 
-                                 WHERE DATE(paymentdate) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
-                                 AND DATE(paymentdate) <= CURDATE()");
-    $totalSalesThisWeek = $stmtThisWeek->fetch(PDO::FETCH_ASSOC)['total_this_week'];
-    
-    // Calculate the difference
-    $difference = $totalSales - $totalSalesThisWeek;
-    
-    return $difference;
+    try {
+        $con = $this->opencon();
+        
+        // Query to get this week's total sales
+        $stmtThisWeek = $con->prepare("SELECT SUM(payment_total) AS total_this_week 
+                                       FROM transactions 
+                                       WHERE DATE(paymentdate) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
+                                       AND DATE(paymentdate) <= CURDATE()");
+        $stmtThisWeek->execute();
+        $result = $stmtThisWeek->fetch(PDO::FETCH_ASSOC);
+        $totalSalesThisWeek = $result['total_this_week'] ?? 0;
+
+        return $totalSalesThisWeek; // Return the total sales for this week
+    } catch (PDOException $e) {
+        // Optionally handle the exception
+        error_log("Error in getTotalSalesDifference: " . $e->getMessage());
+        return 0; // Return 0 or handle as appropriate
+    }
 }
 
 function topProduct(){
@@ -389,9 +390,83 @@ GROUP BY
 
 function getTotalCustomers(){
     $con = $this->opencon();
-    $stmt = $con->query("SELECT COUNT(DISTINCT customer_name) as total FROM orders");
+    $stmt = $con->query("SELECT COUNT(*) AS total
+FROM (
+    SELECT DISTINCT orders.customer_name, transactions.paymentdate
+    FROM orders
+    INNER JOIN transactions ON transactions.order_id = orders.order_id
+    GROUP BY transactions.paymentdate, orders.customer_name
+) AS grouped_customers");
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
+}
+
+function weeklyCustomerCount(){
+    try {
+        $con = $this->opencon();
+        $stmt = $con->query("SELECT COUNT(*) AS total_customers_this_week
+        FROM (
+            SELECT DISTINCT orders.customer_name
+            FROM orders
+            INNER JOIN transactions ON transactions.order_id = orders.order_id
+            WHERE transactions.paymentdate >= CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 1 DAY
+            AND transactions.paymentdate < CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 8 DAY
+            GROUP BY orders.customer_name
+        ) AS grouped_customers;");
+        
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Return the total customers this week
+        return $result['total_customers_this_week'];
+    } catch (PDOException $e) {
+        // Handle exception
+        error_log("Error in weeklyCustomerCount: " . $e->getMessage());
+        return 0; // Return 0 or handle as appropriate
+    }
+}
+function customerPercentage(){
+    try {
+        $con = $this->opencon();
+        
+        // Calculate total unique customers
+        $totalCustomersStmt = $con->query("SELECT COUNT(*) AS total
+FROM (
+    SELECT DISTINCT orders.customer_name, transactions.paymentdate
+    FROM orders
+    INNER JOIN transactions ON transactions.order_id = orders.order_id
+    GROUP BY transactions.paymentdate, orders.customer_name
+) AS grouped_customers");
+        $totalCustomersResult = $totalCustomersStmt->fetch(PDO::FETCH_ASSOC);
+        $totalCustomers = $totalCustomersResult['total'];
+        
+        // Calculate unique customers this week
+        $customersThisWeekStmt = $con->query("SELECT COUNT(*) AS total_customers_this_week
+        FROM (
+            SELECT DISTINCT orders.customer_name
+            FROM orders
+            INNER JOIN transactions ON transactions.order_id = orders.order_id
+            WHERE transactions.paymentdate >= CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 1 DAY
+            AND transactions.paymentdate < CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 8 DAY
+            GROUP BY orders.customer_name
+        ) AS grouped_customers;");
+        $customersThisWeekResult = $customersThisWeekStmt->fetch(PDO::FETCH_ASSOC);
+        $customersThisWeek = $customersThisWeekResult['total_customers_this_week'];
+        
+        // Calculate the percentage
+        if ($totalCustomers > 0) {
+            $percentage = ($customersThisWeek / $totalCustomers) * 100;
+        } else {
+            // Handle division by zero if there are no total customers
+            $percentage = 0;
+        }
+        
+        return $percentage;
+    } catch (PDOException $e) {
+        // Handle exception
+        error_log("Error in weeklyCustomerPercentage: " . $e->getMessage());
+        return 0; // Return 0 or handle as appropriate
+    }
 }
 
 function countTotalProductStocks(){
@@ -496,4 +571,128 @@ GROUP BY
         return false;
     }
 
+
+    function salesfortoday() {
+        $con = $this->opencon();
+        // Prepare the SQL query to sum the total sales for today
+        $stmt = $con->prepare("SELECT SUM(payment_total) AS total_sales FROM transactions WHERE DATE(paymentdate) = CURRENT_DATE");
+    
+        // Execute the statement
+        if ($stmt->execute()) { // Check if the execution was successful
+            // Fetch the result
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Ensure there's a result and return it, otherwise return a default value
+            return $result ? $result : ['total_sales' => 0];
+        } else {
+            // Handle error or return a default value in case of failure
+            return ['total_sales' => 0];
+        }
+}
+
+   function newCustomers(){
+    $con = $this->opencon();
+    // Prepare the SQL query to count the total customers for today
+    $stmt = $con->prepare("SELECT
+    COUNT(DISTINCT orders.customer_name) AS total_customers
+FROM
+    transactions
+INNER JOIN orders ON transactions.order_id = orders.order_id
+WHERE
+    DATE(transactions.paymentdate) = CURRENT_DATE");
+    
+    // Execute the statement
+    if ($stmt->execute()) { // Check if the execution was successful
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Ensure there's a result and return it, otherwise return a default value
+        return $result ? $result : ['total_customers' => 0];
+    } else {
+        // Handle error or return a default value in case of failure
+        return ['total_customers' => 0];
+    }
+   }
+
+function getSalesPercentage() {
+    $con = $this->opencon();
+    
+    // Prepare and execute the total sales query
+    $totalsalesStmt = $con->prepare("SELECT SUM(payment_total) as total FROM transactions");
+    $totalsalesStmt->execute();
+    $totalsalesResult = $totalsalesStmt->fetch(PDO::FETCH_ASSOC);
+    $totalSales = $totalsalesResult['total'];
+    
+    // Prepare and execute the sales this week query
+    $salesthisweekStmt = $con->prepare("SELECT SUM(payment_total) AS total_this_week 
+                                        FROM transactions 
+                                        WHERE DATE(paymentdate) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
+                                        AND DATE(paymentdate) <= CURDATE()");
+    $salesthisweekStmt->execute();
+    $salesthisweekResult = $salesthisweekStmt->fetch(PDO::FETCH_ASSOC);
+    $salesThisWeek = $salesthisweekResult['total_this_week'];
+    
+    // Calculate the percentage
+    if ($totalSales > 0) {
+        $percentage = ($salesThisWeek / $totalSales) * 100;
+    } else {
+        // Handle division by zero if there are no total sales
+        $percentage = 0;
+    }
+
+    return $percentage;
+}
+
+ function totalOrdersCompleted(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT COUNT(*) as total FROM orders");
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $result['total'];
+ }
+
+ function weeklyOrders(){
+    $con = $this->opencon();
+    $stmt = $con->query("SELECT
+    COUNT(orders.order_id) AS total
+FROM
+    transactions
+INNER JOIN  orders on transactions.order_id = orders.order_id
+WHERE
+    DATE(transactions.paymentdate) >= DATE_SUB(
+        CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND DATE(paymentdate) <= CURDATE()");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total'];
+ }
+
+
+function orderPercentage(){
+    $con = $this->opencon();
+    
+    // Fetch total number of orders
+    $totalOrdersStmt = $con->prepare("SELECT COUNT(*) as total FROM orders");
+    $totalOrdersStmt->execute();
+    $totalOrdersResult = $totalOrdersStmt->fetch(PDO::FETCH_ASSOC);
+    $totalOrders = $totalOrdersResult['total'];
+    
+    // Fetch number of orders this week
+    $ordersThisWeekStmt = $con->prepare("SELECT
+    COUNT(orders.order_id) AS total_this_week
+FROM
+    transactions
+INNER JOIN  orders on transactions.order_id = orders.order_id
+WHERE
+    DATE(transactions.paymentdate) >= DATE_SUB(
+        CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND DATE(transactions.paymentdate) <= CURDATE()");
+    $ordersThisWeekStmt->execute();
+    $ordersThisWeekResult = $ordersThisWeekStmt->fetch(PDO::FETCH_ASSOC);
+    $ordersThisWeek = $ordersThisWeekResult['total_this_week']; // Corrected the key to match the SQL alias
+    
+    // Calculate the percentage of orders this week compared to total orders
+    if ($totalOrders > 0) {
+        $percentage = ($ordersThisWeek / $totalOrders) * 100;
+    } else {
+        // Handle division by zero if there are no total orders
+        $percentage = 0;
+    }
+
+    return $percentage;
+}
 }
