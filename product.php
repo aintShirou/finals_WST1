@@ -231,11 +231,10 @@
                 </div>
                 
               </section>
-    
         </div>
-
     </div>
 
+    <!-- Add Account Modal -->
     <div class="modal fade" id="addaccountModal" tabindex="-1" aria-labelledby="addaccountModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content bg-dark">
@@ -246,32 +245,41 @@
         <div class="modal-body" style="color: #fff;">
           <div class="mb-3">
             <label for="firstname" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstname" name="firstname">
+            <input type="text" class="form-control" id="firstname" name="firstname" required>
           </div>
           <div class="mb-3">
             <label for="lastname" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastname" name="lastname">
+            <input type="text" class="form-control" id="lastname" name="lastname" required>
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email">
+            <input type="email" class="form-control" id="email" name="email" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter valid email.</div>
           </div>
           <div class="mb-3">
-            <label for="username" class="form-label">UserName</label>
-            <input type="text" class="form-control" id="username" name="username">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Username is already taken.</div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password">
+            <input type="password" class="form-control" id="password" name="password" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
           </div>
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            <div class="valid-feedback">Looks good!</div>
+            <div class="invalid-feedback">Password doesn't match</div>
           </div>
+          <!-- <div id="passwordError" class="mb-3" style="color: red; display: none;"></div> -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="addAccountButton" name="addAccountButton">Add Account</button>
+          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
         </div>
       </form>
     </div>
@@ -531,12 +539,87 @@ document.addEventListener("DOMContentLoaded", function() {
     </script>  
 
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
+    // Initially disable the "Add Account" button
+    $('#submitBtn').prop('disabled', true);
+
+    // Validate individual input
+    function validateInput(input) {
+      if (input.name === 'password') {
+        return validatePassword(input);
+      } else if (input.name === 'confirmPassword') {
+        return validateConfirmPassword(input);
+      } else {
+        if (input.checkValidity()) {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          return true;
+        } else {
+          input.classList.remove("is-valid");
+          input.classList.add("is-invalid");
+          return false;
+        }
+      }
+    }
+
+   
+    function validatePassword(passwordInput) {
+      const password = passwordInput.value;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      if (regex.test(password)) {
+        passwordInput.classList.remove("is-invalid");
+        passwordInput.classList.add("is-valid");
+        return true;
+      } else {
+        passwordInput.classList.remove("is-valid");
+        passwordInput.classList.add("is-invalid");
+        return false;
+      }
+    }
+
+    // Validate confirm password
+    function validateConfirmPassword(confirmPasswordInput) {
+      const passwordInput = document.querySelector("input[name='password']");
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (password === confirmPassword && password !== '') {
+        confirmPasswordInput.classList.remove("is-invalid");
+        confirmPasswordInput.classList.add("is-valid");
+        return true;
+      } else {
+        confirmPasswordInput.classList.remove("is-valid");
+        confirmPasswordInput.classList.add("is-invalid");
+        return false;
+      }
+    }
+
+    // Attach input event listeners to all form inputs for validation
+    $('input').on('input', function() {
+      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
+      $('#submitBtn').prop('disabled', !allValid);
+    });
+
+    // Prevent form submission on Enter key
+    document.addEventListener("keydown", (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+
+    // Form submission with AJAX
     $('#addAccountForm').submit(function(e) {
       e.preventDefault(); // Prevent default form submission
-  
+
+      // Check if all inputs are valid before submitting
+      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
+      if (!allValid) {
+        alert("Please correct the errors before submitting.");
+        return;
+      }
+
       var formData = $(this).serialize(); // Serialize form data
-  
+
       $.ajax({
         type: "POST",
         url: "add_Account.php", // Server-side script to process the form
@@ -544,8 +627,7 @@ document.addEventListener("DOMContentLoaded", function() {
         success: function(response) {
           // Handle success. 'response' is what's returned from the server
           alert("Account added successfully");
-          $('#addaccountModal').modal('hide'); // Hide the modal
-          // Optionally, refresh the page or part of it to show the new account
+          $('#addaccountModal').modal('hide'); 
         },
         error: function() {
           // Handle error

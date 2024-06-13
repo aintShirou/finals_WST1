@@ -5,6 +5,7 @@ $con = new database();
 
     session_start();
 
+ 
     
     if(isset($_POST['save'])){
       $product_id = $_POST['product_id']; 
@@ -367,6 +368,7 @@ $(document).ready(function(){
 });
 </script>
 
+<!-- Validation of Password -->
 <script>
   $(document).ready(function() {
     // Initially disable the "Add Account" button
@@ -391,7 +393,7 @@ $(document).ready(function(){
       }
     }
 
-    // Validate password
+   
     function validatePassword(passwordInput) {
       const password = passwordInput.value;
       const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
