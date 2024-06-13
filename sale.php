@@ -202,6 +202,70 @@ require_once('classes/database.php');
   });
 </script>
 
+<!-- Checking for Email -->
+<script>
+$(document).ready(function(){
+    $('#email').on('input', function(){
+        var email = $(this).val();
+        if(email.length > 0) {
+            $.ajax({
+                url: 'check_email.php',                
+                method: 'POST',
+                data: {email: email},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.exists) {
+                        $('#email').removeClass('is-valid').addClass('is-invalid');
+                        $('#emailFeedback').text('Email is already taken.');
+                        $('#nextButton').prop('disabled', true); // Disable the Next button
+                    } else {
+                        $('#email').removeClass('is-invalid').addClass('is-valid');
+                        $('#emailFeedback').text('');
+                        $('#nextButton').prop('disabled', false); // Enable the Next button
+                    }
+                }
+            });
+        } else {
+            $('#email').removeClass('is-valid is-invalid');
+            $('#emailFeedback').text('');
+        }
+    });
+});
+</script>
+
+<!-- Checking for Username-->
+<script>
+$(document).ready(function(){
+    $('#username').on('input', function(){
+        var username = $(this).val();
+        if(username.length > 0) {
+            $.ajax({
+                url: 'check_username.php',
+                method: 'POST',
+                data: {username: username},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.exists) {
+                        $('#username').removeClass('is-valid').addClass('is-invalid');
+                        $('#usernameFeedback').text('Username is already taken.');
+                        $('#nextButton').prop('disabled', true); // Disable the Next button
+                    } else {
+                        $('#username').removeClass('is-invalid').addClass('is-valid');
+                        $('#usernameFeedback').text('');
+                        $('#nextButton').prop('disabled', false); // Enable the Next button
+                    }
+                }
+            });
+        } else {
+            $('#username').removeClass('is-valid is-invalid');
+            $('#usernameFeedback').text('');
+            $('#nextButton').prop('disabled', false); // Enable the Next button if username is empty
+        }
+    });
+});
+
+</script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

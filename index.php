@@ -1,7 +1,7 @@
 <?php
 
 require_once('classes/database.php');
-    $con = new database();  
+$con = new database();  
 
     session_start();
 
@@ -248,29 +248,37 @@ require_once('classes/database.php');
         <div class="modal-body" style="color: #fff;">
           <div class="mb-3">
             <label for="firstname" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstname" name="firstname">
+            <input type="text" class="form-control" id="firstname" name="firstname" required>
           </div>
           <div class="mb-3">
             <label for="lastname" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastname" name="lastname">
+            <input type="text" class="form-control" id="lastname" name="lastname" required>
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email">
+            <input type="email" class="form-control" id="email" name="email" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter valid email.</div>
           </div>
           <div class="mb-3">
-            <label for="username" class="form-label">UserName</label>
-            <input type="text" class="form-control" id="username" name="username">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Username is already taken.</div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password">
+            <input type="password" class="form-control" id="password" name="password" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
           </div>
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            <div class="valid-feedback">Looks good!</div>
+            <div class="invalid-feedback">Password doesn't match</div>
           </div>
-          <div id="passwordError" class="mb-3" style="color: red; display: none;"></div>
+          <!-- <div id="passwordError" class="mb-3" style="color: red; display: none;"></div> -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -448,8 +456,7 @@ $(document).ready(function(){
         success: function(response) {
           // Handle success. 'response' is what's returned from the server
           alert("Account added successfully");
-          $('#addaccountModal').modal('hide'); // Hide the modal
-          // Optionally, refresh the page or part of it to show the new account
+          $('#addaccountModal').modal('hide'); 
         },
         error: function() {
           // Handle error
@@ -459,6 +466,74 @@ $(document).ready(function(){
     });
   });
 </script>
+
+<!-- Checking for Email -->
+<script>
+$(document).ready(function(){
+    $('#email').on('input', function(){
+        var email = $(this).val();
+        if(email.length > 0) {
+            $.ajax({
+                url: 'check_email.php',                
+                method: 'POST',
+                data: {email: email},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.exists) {
+                        $('#email').removeClass('is-valid').addClass('is-invalid');
+                        $('#emailFeedback').text('Email is already taken.');
+                        $('#nextButton').prop('disabled', true); // Disable the Next button
+                    } else {
+                        $('#email').removeClass('is-invalid').addClass('is-valid');
+                        $('#emailFeedback').text('');
+                        $('#nextButton').prop('disabled', false); // Enable the Next button
+                    }
+                }
+            });
+        } else {
+            $('#email').removeClass('is-valid is-invalid');
+            $('#emailFeedback').text('');
+        }
+    });
+});
+</script>
+
+<!-- Checking for Username-->
+<script>
+$(document).ready(function(){
+    $('#username').on('input', function(){
+        var username = $(this).val();
+        if(username.length > 0) {
+            $.ajax({
+                url: 'check_username.php',
+                method: 'POST',
+                data: {username: username},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.exists) {
+                        $('#username').removeClass('is-valid').addClass('is-invalid');
+                        $('#usernameFeedback').text('Username is already taken.');
+                        $('#nextButton').prop('disabled', true); // Disable the Next button
+                    } else {
+                        $('#username').removeClass('is-invalid').addClass('is-valid');
+                        $('#usernameFeedback').text('');
+                        $('#nextButton').prop('disabled', false); // Enable the Next button
+                    }
+                }
+            });
+        } else {
+            $('#username').removeClass('is-valid is-invalid');
+            $('#usernameFeedback').text('');
+            $('#nextButton').prop('disabled', false); // Enable the Next button if username is empty
+        }
+    });
+});
+
+</script>
+
+
+
+
 
 
 
