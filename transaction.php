@@ -68,67 +68,76 @@
                     <div class="col-md-6">
                         <!-- Transaction of the Customer -->
                         <div class="transactions">
-                            <div class="title-trans">
+                          <div class="title-trans">
                               <h2>Transaction</h2>
+                              <div class="filter-trans">
+                                <label for="filterDate">Filter by Date:</label>
+                                <input type="month" id="filterMonth" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;" onchange="filterTransactions()">
+                                <input type="week" id="filterWeek" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem;  border-radius: 3px;" onchange="filterTransactions()">
+
+                              </div>
                               <button class="btn btn-danger" onclick="exportToExcel()">Export to Excel</button>
-                            </div>
-                            <!-- Table for Transaction -->
-                            <div class="table-trans">
-                              <table class="table">
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Customer Name</th>
-                                    <th>Payment Method</th>
-                                    <th>Date</th>
-                                    <th>Price</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <?php
-                                  $records_per_page = 14;
-                                  $trans_page = isset($_GET['trans_page']) ? $_GET['trans_page'] : 1;
-                                  $start_from_trans = ($trans_page > 1) ? ($trans_page-1) * $records_per_page : 0;  
+                          </div>
+                          <!-- Table for Transaction -->
+                          <div class="table-trans">
+                              <table class="table" id="transactionTable">
+                                  <thead>
+                                      <tr>
+                                          <th>#</th>
+                                          <th>Customer Name</th>
+                                          <th>Payment Method</th>
+                                          <th>Date</th>
+                                          <th>Price</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <?php
+                                      $records_per_page = 14;
+                                      $trans_page = isset($_GET['trans_page']) ? $_GET['trans_page'] : 1;
+                                      $start_from_trans = ($trans_page > 1) ? ($trans_page - 1) * $records_per_page : 0;
 
-                                  $total_trans = $con->getTotalTransactions();
-                                  $counter_trans = $total_trans - (($trans_page-1) * $records_per_page);
+                                      $total_trans = $con->getTotalTransactions();
+                                      $counter_trans = $total_trans - (($trans_page - 1) * $records_per_page);
 
-                                  $total_trans_pages = ceil($total_trans / $records_per_page);
+                                      $total_trans_pages = ceil($total_trans / $records_per_page);
 
-                                  $trans = $con->viewTransactions($start_from_trans, $records_per_page);
-                                  foreach($trans as $transaction){
-                                  ?>
-                                  <tr>
-                                    <td><a href="#" data-toggle="modal" data-target="#ORModal"><?php echo $counter_trans--;?></a></td>
-                                    <td><?php echo ucwords($transaction['customer_name']);?></td>
-                                    <td><?php echo ucwords($transaction['payment_method']);?></td>
-                                    <td><?php echo ucwords($transaction['paymentdate']);?></td>
-                                    <td>PHP <?php echo ($transaction['total_purchases']);?></td>
-                                  </tr>
-                                  <?php
-                                  }
-                                  ?>
-                                </tbody>
+                                      $trans = $con->viewTransactions($start_from_trans, $records_per_page);
+                                      foreach ($trans as $transaction) {
+                                      ?>
+                                          <tr>
+                                              <td><a href="#" data-toggle="modal" data-target="#ORModal"><?php echo $counter_trans--; ?></a></td>
+                                              <td><?php echo ucwords($transaction['customer_name']); ?></td>
+                                              <td><?php echo ucwords($transaction['payment_method']); ?></td>
+                                              <td><?php echo $transaction['paymentdate']; ?></td>
+                                              <td>PHP <?php echo ($transaction['total_purchases']); ?></td>
+                                          </tr>
+                                      <?php
+                                      }
+                                      ?>
+                                  </tbody>
                               </table>
                               <?php
-                              $total_trans_pages = ceil($total_trans / $records_per_page);
-
-                              for ($i=1; $i<=$total_trans_pages; $i++) {
-                                echo "<a href='transaction.php?trans_page=".$i."'>".$i."</a> ";
-                            }
+                              for ($i = 1; $i <= $total_trans_pages; $i++) {
+                                  echo "<a href='transaction.php?trans_page=" . $i . "'>" . $i . "</a> ";
+                              }
                               ?>
-                            </div>
-                        </div>
+                          </div>
+                      </div>
                     </div>
                     <div class="col-md-6">
                       <div class="order-recent">
                         <div class="title-trans">
                           <h2>Recent Order</h2>
+                              <div class="filter-trans">
+                                <label for="filterDates">Filter by Date:</label>
+                                <input type="month" id="monthsFilter" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;" onchange="filterTransaction()">
+                                <input type="week" id="weeksFilter" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;" onchange="filterTransaction()">
+                              </div>
                           <button class="btn btn-danger" onclick="exportOrderToExcel()">Export to Excel</button>
                         </div>
                       <!-- Recent Purchases -->
                       <div class="recent-pur">
-                          <table class="table">
+                          <table class="table" id="recentOrderTable">
                               <thead>
                                   <tr>
                                       <th>Order ID</th>
@@ -148,7 +157,7 @@
                                   $orders = $con->viewOrders($start_from_order, $records_per_page);
                                   foreach($orders as $order){
                                   ?>
-                                  <tr>
+                                  <tr data-order-date="<?php echo $order['paymentdate']; ?>">
                                       <td><a href="#" data-toggle="modal" data-target="#productModal" data-id="<?php echo $order['order_id'];?>"><?php echo ucwords($order['order_id']);?></a></td>
                                       <td><?php echo ucwords($order['product']);?></td>
                                       <td>PHP <?php echo ucwords($order['total_price']);?></td>
@@ -550,6 +559,10 @@ $(document).ready(function(){
 });
 
 </script>
+
+<!-- Recent Order Filter -->
+
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>

@@ -252,10 +252,11 @@ function getTotalTransactions(){
 }
 
 // Pagination for Orders Made by Customers
-
 function viewOrders($start_from, $records_per_page){
     $con = $this->opencon();
-    $stmt = $con->prepare("SELECT product.product_id, CONCAT(product.product_brand , ' ', product.product_name) as product, product.price, orders.order_id, orders.quantity_ordered, (product.price * orders.quantity_ordered) AS total_price FROM `orders` INNER JOIN product ON orders.product_id = product.product_id GROUP BY order_id ORDER BY `orders`.`order_id` DESC LIMIT :start_from, :records_per_page");
+    $stmt = $con->prepare("SELECT product.product_id, CONCAT(product.product_brand , ' ', product.product_name) as product, product.price, orders.order_id, orders.quantity_ordered, (product.price * orders.quantity_ordered) AS total_price,  transactions.paymentdate FROM transactions
+                INNER JOIN orders ON transactions.order_id = orders.order_id
+                INNER JOIN product ON orders.product_id = product.product_id GROUP BY order_id ORDER BY orders.`order_id` DESC LIMIT :start_from, :records_per_page");
     $stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
     $stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
     $stmt->execute();

@@ -17,7 +17,7 @@ foreach($products as $product) {
     echo "      <p class='card-texts'>" . $product['product_brand'] . "</p>\n";
     echo "      <h2 class='card-prices'>₱" . $product['price'] . "</h2>\n";
     echo "      <div class='checkoutbtns'>\n";
-    echo "        <button type='button' class='add-button' data-item-id='" . $product['product_id'] . "' data-image-url='" . $product['item_image'] . "' data-brand='" . $product['product_brand'] . "' data-title='" . $product['product_name'] . "' data-price='" . $product['price'] . "'>Add to Cart</button>\n";
+    echo "        <button type='button' class='add-button' data-item-id='" . $product['product_id'] . "' data-image-url='" . $product['item_image'] . "' data-brand='" . $product['product_brand'] . "' data-title='" . $product['product_name'] . "' data-price='" . $product['price'] . "' data-stock='" . $product['stocks'] . "'>Add to Cart</button>\n";
     echo "      </div>\n";
     echo "    </div>\n";
     echo "  </div>\n";

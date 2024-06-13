@@ -70,6 +70,7 @@ require_once('classes/database.php');
       
                         <div class="item-sales-chart">
                           <canvas id="linechart"></canvas>
+                          <input type="month" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;"  onchange="filterChart(this)">
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-12 col-m-12">
@@ -128,10 +129,10 @@ require_once('classes/database.php');
                 </div>
       
               </section>
+            
         </div>
-    </div>
 
-    <!--Add Accounts  -->
+    </div>
 
     <div class="modal fade" id="addaccountModal" tabindex="-1" aria-labelledby="addaccountModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -143,129 +144,46 @@ require_once('classes/database.php');
         <div class="modal-body" style="color: #fff;">
           <div class="mb-3">
             <label for="firstname" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstname" name="firstname" required>
+            <input type="text" class="form-control" id="firstname" name="firstname">
           </div>
           <div class="mb-3">
             <label for="lastname" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastname" name="lastname" required>
+            <input type="text" class="form-control" id="lastname" name="lastname">
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-              <div class="valid-feedback">Looks good!</div>
-              <div class="invalid-feedback">Please enter valid email.</div>
+            <input type="email" class="form-control" id="email" name="email">
           </div>
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
-              <div class="valid-feedback">Looks good!</div>
-              <div class="invalid-feedback">Username is already taken.</div>
+            <label for="username" class="form-label">UserName</label>
+            <input type="text" class="form-control" id="username" name="username">
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-              <div class="valid-feedback">Looks good!</div>
-              <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
+            <input type="password" class="form-control" id="password" name="password">
           </div>
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-            <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Password doesn't match</div>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
           </div>
-          <!-- <div id="passwordError" class="mb-3" style="color: red; display: none;"></div> -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
+          <button type="submit" class="btn btn-danger" id="addAccountButton" name="addAccountButton">Add Account</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
    
 <script>
- $(document).ready(function() {
-    // Initially disable the "Add Account" button
-    $('#submitBtn').prop('disabled', true);
-
-    // Validate individual input
-    function validateInput(input) {
-      if (input.name === 'password') {
-        return validatePassword(input);
-      } else if (input.name === 'confirmPassword') {
-        return validateConfirmPassword(input);
-      } else {
-        if (input.checkValidity()) {
-          input.classList.remove("is-invalid");
-          input.classList.add("is-valid");
-          return true;
-        } else {
-          input.classList.remove("is-valid");
-          input.classList.add("is-invalid");
-          return false;
-        }
-      }
-    }
-
-   
-    function validatePassword(passwordInput) {
-      const password = passwordInput.value;
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-      if (regex.test(password)) {
-        passwordInput.classList.remove("is-invalid");
-        passwordInput.classList.add("is-valid");
-        return true;
-      } else {
-        passwordInput.classList.remove("is-valid");
-        passwordInput.classList.add("is-invalid");
-        return false;
-      }
-    }
-
-    // Validate confirm password
-    function validateConfirmPassword(confirmPasswordInput) {
-      const passwordInput = document.querySelector("input[name='password']");
-      const password = passwordInput.value;
-      const confirmPassword = confirmPasswordInput.value;
-
-      if (password === confirmPassword && password !== '') {
-        confirmPasswordInput.classList.remove("is-invalid");
-        confirmPasswordInput.classList.add("is-valid");
-        return true;
-      } else {
-        confirmPasswordInput.classList.remove("is-valid");
-        confirmPasswordInput.classList.add("is-invalid");
-        return false;
-      }
-    }
-
-    // Attach input event listeners to all form inputs for validation
-    $('input').on('input', function() {
-      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
-      $('#submitBtn').prop('disabled', !allValid);
-    });
-
-    // Prevent form submission on Enter key
-    document.addEventListener("keydown", (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent form submission
-      }
-    });
-
-    // Form submission with AJAX
+  $(document).ready(function() {
     $('#addAccountForm').submit(function(e) {
       e.preventDefault(); // Prevent default form submission
-
-      // Check if all inputs are valid before submitting
-      const allValid = Array.from(document.querySelectorAll('input')).every(input => validateInput(input));
-      if (!allValid) {
-        alert("Please correct the errors before submitting.");
-        return;
-      }
-
+  
       var formData = $(this).serialize(); // Serialize form data
-
+  
       $.ajax({
         type: "POST",
         url: "add_Account.php", // Server-side script to process the form
@@ -273,7 +191,8 @@ require_once('classes/database.php');
         success: function(response) {
           // Handle success. 'response' is what's returned from the server
           alert("Account added successfully");
-          $('#addaccountModal').modal('hide'); 
+          $('#addaccountModal').modal('hide'); // Hide the modal
+          // Optionally, refresh the page or part of it to show the new account
         },
         error: function() {
           // Handle error
@@ -284,75 +203,14 @@ require_once('classes/database.php');
   });
 </script>
 
-<!-- Checking for Email -->
-<script>
-$(document).ready(function(){
-    $('#email').on('input', function(){
-        var email = $(this).val();
-        if(email.length > 0) {
-            $.ajax({
-                url: 'check_email.php',                
-                method: 'POST',
-                data: {email: email},
-                dataType: 'json',
-                success: function(response) {
-                    if(response.exists) {
-                        $('#email').removeClass('is-valid').addClass('is-invalid');
-                        $('#emailFeedback').text('Email is already taken.');
-                        $('#nextButton').prop('disabled', true); // Disable the Next button
-                    } else {
-                        $('#email').removeClass('is-invalid').addClass('is-valid');
-                        $('#emailFeedback').text('');
-                        $('#nextButton').prop('disabled', false); // Enable the Next button
-                    }
-                }
-            });
-        } else {
-            $('#email').removeClass('is-valid is-invalid');
-            $('#emailFeedback').text('');
-        }
-    });
-});
-</script>
-
-<!-- Checking for Username-->
-<script>
-$(document).ready(function(){
-    $('#username').on('input', function(){
-        var username = $(this).val();
-        if(username.length > 0) {
-            $.ajax({
-                url: 'check_username.php',
-                method: 'POST',
-                data: {username: username},
-                dataType: 'json',
-                success: function(response) {
-                    if(response.exists) {
-                        $('#username').removeClass('is-valid').addClass('is-invalid');
-                        $('#usernameFeedback').text('Username is already taken.');
-                        $('#nextButton').prop('disabled', true); // Disable the Next button
-                    } else {
-                        $('#username').removeClass('is-invalid').addClass('is-valid');
-                        $('#usernameFeedback').text('');
-                        $('#nextButton').prop('disabled', false); // Enable the Next button
-                    }
-                }
-            });
-        } else {
-            $('#username').removeClass('is-valid is-invalid');
-            $('#usernameFeedback').text('');
-            $('#nextButton').prop('disabled', false); // Enable the Next button if username is empty
-        }
-    });
-});
-
-</script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/adapters/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="bootstrap-4.5.3-dist/js/bootstrap.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=<?php echo time();?>"></script>
 
 </body>
 </html>

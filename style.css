@@ -736,9 +736,9 @@ table a{
     background-color: var(--bg-black-100);
     border-radius: 20px;
     height: 38.5rem;
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-items: center;
+    justify-items: center; */
     border: var(--text-black-900) solid 1px;
 }
 
@@ -748,6 +748,7 @@ table a{
     background-color: var(--bg-black-100);
     border: var(--text-black-900) solid 1px;
 }
+
 
 .total-income, .inquiry-succsess, .new-customer, .complete-order{
     background-color: var(--bg-black-100);

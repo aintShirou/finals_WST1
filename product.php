@@ -1,13 +1,12 @@
 <?php
-    
-    require_once('classes/database.php');
-    $con = new database();  
-    session_start();
+require_once('classes/database.php');
+session_start();
 
-
-   
-
+// Initialize the database connection
+$con = new database();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,53 +133,17 @@
                                         </div>
                                         <div class="container-fluid my-5">
                                           <div class="card-container">
-                                            <?php 
-                                              $categoryId = isset($_GET['cat_id']) && $_GET['cat_id']!= '0'? filter_input(INPUT_GET, 'cat_id', FILTER_SANITIZE_NUMBER_INT) : null;
-                                              $page = isset($_GET['page'])? filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT) : 1;
-                                              $records_per_page = 2;
-                                              $products = $con->viewProducts1($categoryId, $page, $records_per_page);
-                                              foreach($products as $product) {
-                                          ?>                      
-                                            <div class="col-md-4">
-                                              <div class="card mb-4">
-                                                <img src="<?php echo $product['item_image'];?>" class="card-img-top" alt="<?php echo $product['product_name'];?>">
-                                                <div class="card-bodys">
-                                                  <h5 class="card-titles"><?php echo $product['product_name'];?></h5>
-                                                  <p class="card-texts"><?php echo $product['product_brand'];?></p>
-                                                  <h2 class="card-prices">₱<?php echo $product['price'];?></h2>
-                                                  <div class="checkoutbtns">
-                                                    <button type="button" class="add-button"
-                                                      data-item-id="<?php echo $product['product_id'];?>"
-                                                      data-image-url="<?php echo $product['item_image'];?>"
-                                                      data-brand="<?php echo $product['product_brand'];?>"
-                                                      data-title="<?php echo $product['product_name'];?>"
-                                                      data-price="<?php echo $product['price'];?>"
-                                                      data-stock="<?php echo $product['stocks'];?>"> <!-- Add this line -->
-                                                      Add to Cart
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            <?php
-                                              }
-                                          ?>
+                                                <!-- To be filled automatically -->
+                                          </div>
+                                          <div class="pagination-container">
+                                              <!-- To be filled automatically -->
+                                          </div>
                                           </div>
                                         </div>
-                                    </div>
-                                    <div class="pagination">
-                                    <?php
-                                        $total_products = $con->getProductCount($categoryId);
-                                        $total_pages = ceil($total_products / $records_per_page);
+                                      </div>
+                                          
+                                        
 
-                                        for ($i = 1; $i <= $total_pages; $i++) {
-                                            $class = ($page == $i) ? 'class="active"' : '';
-                                            echo "<a href='product.php?cat_id=$categoryId&page=$i' $class>$i</a> ";
-                                        }
-                                      ?>
-                                    </div>
-                                
-                                  </div>
 
                                   <div class="col-md-6">
                                     <div class="checkout">
@@ -286,47 +249,88 @@
   </div>
 </div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      let cart = [];
+
+
+    <!-- AJAX libary -->
     
-      document.addEventListener('click', event => {
-        if (event.target.matches('.add-button')) {
-          const itemId = event.target.dataset.itemId;
-          const itemPrice = parseFloat(event.target.dataset.price);
-          const itemTitle = event.target.dataset.title;
-          const itemBrand = event.target.dataset.brand;
-          const itemImageUrl = event.target.dataset.imageUrl;
-          const itemStock = parseInt(event.target.dataset.stock); // Get the stock from the button
-    
-          if (itemStock <= 0) {
-            alert("This product is out of stock.");
-            return; // Exit if the product is out of stock
-          }
-    
-          let existingItem = cart.find(item => item.product_id === itemId);
-    
-          if (existingItem) {
-            if (existingItem.quantity < existingItem.stock) {
-              existingItem.quantity++;
-            } else {
-              alert("You've reached the maximum available stock for this product.");
-            }
-          } else {
-            cart.push({
-              product_id: itemId,
-              price: itemPrice,
-              product_name: itemTitle,
-              product_brand: itemBrand,
-              item_image: itemImageUrl,
-              quantity: 1,
-              stock: itemStock // Store the stock in the cart item
-            });
-          }
-    
-          updateCartDisplay();
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetchProducts();
+
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.page-link')) {
+            e.preventDefault();
+            const page = e.target.getAttribute('href').split('page=')[1];
+            fetchProducts(page);
         }
-      });
+    });
+});
+
+function fetchProducts(page = 1) {
+    fetch(`fetch_product.php?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.error) {
+                document.querySelector('.card-container').innerHTML = data.products;
+                document.querySelector('.pagination-container').innerHTML = data.pagination;
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error fetching products:', error));
+}
+</script>
+
+
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  let cart = [];
+
+  // Delegate the click event from the document to the add-button
+  document.addEventListener('click', event => {
+    const addButton = event.target.closest('.add-button'); // Find the closest parent which is an add-button
+    if (addButton) {
+      const itemId = addButton.dataset.itemId;
+      const itemPrice = parseFloat(addButton.dataset.price);
+      const itemTitle = addButton.dataset.title;
+      const itemBrand = addButton.dataset.brand;
+      const itemImageUrl = addButton.dataset.imageUrl;
+      const itemStock = parseInt(addButton.dataset.stock); // Get the stock from the button
+
+      if (itemStock <= 0) {
+        alert("This product is out of stock.");
+        return; // Exit if the product is out of stock
+      }
+
+      let existingItem = cart.find(item => item.product_id === itemId);
+
+      if (existingItem) {
+        if (existingItem.quantity < existingItem.stock) {
+          existingItem.quantity++;
+        } else {
+          alert("You've reached the maximum available stock for this product.");
+        }
+      } else {
+        cart.push({
+          product_id: itemId,
+          price: itemPrice,
+          product_name: itemTitle,
+          product_brand: itemBrand,
+          item_image: itemImageUrl,
+          quantity: 1,
+          stock: itemStock // Store the stock in the cart item
+        });
+      }
+
+      updateCartDisplay();
+    }
+  });
     
       function updateCartDisplay() {
         const cartItemContainer = document.getElementById('cartItem');
@@ -396,10 +400,6 @@
     });
     </script>
 
-    <!-- AJAX libary -->
-    
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 <script>
 $(document).ready(function(){
   $('#searchInput').on('input', function() {
@@ -422,48 +422,54 @@ document.getElementById('stockCategory').addEventListener('change', function() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
 
-  // Display loading indicator
   document.querySelector('.card-container').innerHTML = '<p>Loading products...</p>';
 
   xhr.onload = function() {
     if (this.status == 200) {
+      try {
         var products = JSON.parse(this.responseText);
         var output = '';
         if (products.length > 0) {
-            for (var i in products) {
-                output += '<div class="card mb-4">' +
-                    '<img src="' + products[i].item_image + '" class="card-img-top" alt="' + products[i].product_name + '">' +
-                    '<div class="card-bodys">' +
-                    '<h5 class="card-titles">' + products[i].product_name + '</h5>' +
-                    '<p class="card-texts">' + products[i].product_brand + '</p>' +
-                    '<h2 class="card-prices">₱' + products[i].price + '</h2>' +
-                    '<div class="checkoutbtns">' +
-                    '<button type="button" class="add-button" ' +
-                    'data-item-id="' + products[i].product_id + '" ' +
-                    'data-image-url="' + products[i].item_image + '" ' +
-                    'data-brand="' + products[i].product_brand + '" ' +
-                    'data-title="' + products[i].product_name + '" ' +
-                    'data-price="' + products[i].price + '">Add to Cart</button>' +
-                    '</div></div></div>';
-            }
+          for (let i = 0; i < products.length; i++) { // Changed to for loop with let for block scope
+            output += `<div class="card mb-4">
+              <img src="${products[i].item_image}" class="card-img-top" alt="${products[i].product_name}">
+              <div class="card-bodys">
+                <h5 class="card-titles">${products[i].product_name}</h5>
+                <p class="card-texts">${products[i].product_brand}</p>
+                <h2 class="card-prices">₱${products[i].price}</h2>
+                <div class="checkoutbtns">
+                  <button type="button" class="add-button"
+                    data-item-id="${products[i].product_id}"
+                    data-image-url="${products[i].item_image}"
+                    data-brand="${products[i].product_brand}"
+                    data-title="${products[i].product_name}"
+                    data-price="${products[i].price}"
+                    data-stock="${products[i].stocks}">Add to Cart</button>
+                </div>
+              </div>
+            </div>`;
+          }
         } else {
-            output = '<p>No products found.</p>';
+          output = '<p>No products found.</p>';
         }
         document.querySelector('.card-container').innerHTML = output;
+      } catch (e) {
+        document.querySelector('.card-container').innerHTML = '<p>Error parsing product data. Please try again.</p>';
+      }
     } else {
-        // Handle errors
-        document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
+      document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
     }
-};
+  };
 
   xhr.onerror = function() {
-    // Handle network errors
     document.querySelector('.card-container').innerHTML = '<p>Network error. Please check your connection and try again.</p>';
   };
 
   xhr.send();
 });
-      </script>
+</script>
+
+
 
 
 <script>

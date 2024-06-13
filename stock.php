@@ -451,6 +451,34 @@
     </div>
   </div>
 </div>
+
+
+<script>
+  function updatePagination(currentPage, totalPages) {
+  var paginationContainer = document.getElementById('ajax-pagination');
+  paginationContainer.innerHTML = ''; // Clear existing pagination buttons
+
+  for (let i = 1; i <= totalPages; i++) {
+    var button = document.createElement('button');
+    button.innerText = i;
+    button.onclick = function() { changePage(i); };
+
+    if (i === currentPage) {
+      button.classList.add('active'); // Highlight the current page button
+    }
+
+    paginationContainer.appendChild(button);
+  }
+}
+
+function changePage(pageNumber) {
+  currentPage = pageNumber;
+  // Assuming fetchProducts is your function to load products for the given page
+  fetchProducts(document.getElementById('stockCategory').value, currentPage);
+  // You would also call updatePagination here with the new currentPage and the total number of pages, which should be fetched or calculated
+  updatePagination(currentPage, totalPages);
+}
+</script>
       <script>
       function changeCategory() {
         var categoryId = document.getElementById('stockCategory').value;
