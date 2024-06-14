@@ -5,6 +5,11 @@
    
     session_start();
 
+    if (!isset($_SESSION['user'])) {
+      header('location:login.php');
+      exit();
+    }
+
     if(isset($_POST['addproduct'])){
       $product_name = $_POST['productName'];
       $product_brand = $_POST['productBrand'];

@@ -4,21 +4,37 @@ $con = new database();
 
 session_start();
 
+if (isset($_SESSION['user'])) {
+    // Redirect to index.php or another appropriate page
+    header('Location: index.php');
+    exit();
+}
+
 
 if (isset($_POST['login'])) {
-        $username = $_POST['user'];
-        $password = $_POST['pass'];
-        $result = $con->check($username, $password);
+    $username = $_POST['user'];
+    $password = $_POST['pass'];
+    // Check if 'Remember me' was checked
+    $rememberMe = isset($_POST['rememberMe']);
     
-        if ($result) {
-            $_SESSION['user'] = $result['user'];
-            $_SESSION['admin_id'] = $result['admin_id'];
-            
-            header('location:index.php');
-            exit();
-        } else {
-            $error = "Incorrect username or password. Please try again.";
+    $result = $con->check($username, $password);
+
+    if ($result) {
+        $_SESSION['user'] = $result['user'];
+        $_SESSION['admin_id'] = $result['admin_id'];
+
+        if ($rememberMe) {
+            // Extend session cookie lifetime to 30 days
+            $params = session_get_cookie_params();
+            setcookie(session_name(), session_id(), time() + (86400 * 30), $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
         }
+        // No else part needed, as PHP sessions expire when the browser is closed by default
+
+        header('location:index.php');
+        exit();
+    } else {
+        $error = "Incorrect username or password. Please try again.";
+    }
 }
 
   ?>
@@ -101,7 +117,7 @@ if (isset($_POST['login'])) {
                                     <div class="rempas mb-5">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                                            <label class="form-check-label" for="inlineCheckbox1">Remember me</label>
+                                            <label class="form-check-label" for="inlineCheckbox1" name="rememberMe">Remember me</label>
                                         </div>
                                         <a href="forgot_password.php" style="text-decoration:none;">Forget Password?</a>
                                     </div>
