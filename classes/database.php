@@ -696,4 +696,28 @@ WHERE
 
     return $percentage;
 }
+
+function emailResetPass($email, $token) {
+    $con = $this->opencon();
+    $sql = "UPDATE admin SET password_reset_token = :token WHERE email = :email";
+    $stmt = $con->prepare($sql);
+    $stmt->execute(['token' => $token, 'email' => $email]);
+}
+
+function getUserByToken($token){
+    $con = $this->opencon();
+    $stmt = $con->prepare("SELECT * FROM admin WHERE password_reset_token = ?");
+    $stmt->execute([$token]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function updateUserPassword($adminId, $hashedPassword) {
+    $con = $this->opencon();
+    $stmt = $con->prepare("UPDATE admin SET pass = ? WHERE admin_id = ?");
+    if ($stmt->execute([$hashedPassword, $adminId])) {
+        return true; // Password updated successfully
+    } else {
+        return false; // Failed to update password
+    }
+}
 }

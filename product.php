@@ -256,35 +256,6 @@ $con = new database();
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetchProducts();
-
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('.page-link')) {
-            e.preventDefault();
-            const page = e.target.getAttribute('href').split('page=')[1];
-            fetchProducts(page);
-        }
-    });
-});
-
-function fetchProducts(page = 1) {
-    fetch(`fetch_product.php?page=${page}`)
-        .then(response => response.json())
-        .then(data => {
-            if (!data.error) {
-                document.querySelector('.card-container').innerHTML = data.products;
-                document.querySelector('.pagination-container').innerHTML = data.pagination;
-            } else {
-                console.error(data.error);
-            }
-        })
-        .catch(error => console.error('Error fetching products:', error));
-}
-</script>
-
-
 
 
 
@@ -400,28 +371,71 @@ function fetchProducts(page = 1) {
     });
     </script>
 
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetchProducts();
+
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.page-link')) {
+            e.preventDefault();
+            const page = e.target.getAttribute('href').split('page=')[1];
+            fetchProducts(page);
+        }
+    });
+});
+
+function fetchProducts(page = 1) {
+    fetch(`fetch_product.php?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.error) {
+                document.querySelector('.card-container').innerHTML = data.products;
+                document.querySelector('.pagination-container').innerHTML = data.pagination;
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error fetching products:', error));
+}
+</script>
+
 <script>
 $(document).ready(function(){
   $('#searchInput').on('input', function() {
     var searchQuery = $('#searchInput').val();
 
-    $.ajax({
-      url: 'search_product_orders.php',
-      type: 'post',
-      data: {search: searchQuery},
-      success: function(response) {
-        $('.card-container').html(response);
-      }
-    });
+    if (searchQuery === '') {
+      // If search bar is cleared, fetch initial products without reloading the page
+      fetchProducts();
+    } else {
+      // If there is a search query, perform the search
+      $.ajax({
+        url: 'search_product_orders.php',
+        type: 'post',
+        data: {search: searchQuery},
+        success: function(response) {
+          $('.card-container').html(response);
+        }
+      });
+    }
   });
 });
 </script>
 
 <script>
 document.getElementById('stockCategory').addEventListener('change', function() {
+  // Adjusted to check if the "All" option (with value "0") is selected
+  if (this.value === "0") {
+    // Code to revert to the initial page
+    document.querySelector('.card-container').innerHTML = '<p>Loading initial products...</p>';
+    fetchInitialProducts(); // Call the function to fetch and display all initial products
+    return; // Exit the function early
+  }
+
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'get_products.php?cat_id=' + this.value, true);
-
   document.querySelector('.card-container').innerHTML = '<p>Loading products...</p>';
 
   xhr.onload = function() {
@@ -430,7 +444,7 @@ document.getElementById('stockCategory').addEventListener('change', function() {
         var products = JSON.parse(this.responseText);
         var output = '';
         if (products.length > 0) {
-          for (let i = 0; i < products.length; i++) { // Changed to for loop with let for block scope
+          for (let i = 0; i < products.length; i++) {
             output += `<div class="card mb-4">
               <img src="${products[i].item_image}" class="card-img-top" alt="${products[i].product_name}">
               <div class="card-bodys">
@@ -467,6 +481,34 @@ document.getElementById('stockCategory').addEventListener('change', function() {
 
   xhr.send();
 });
+
+function fetchInitialProducts() {
+  // Implement the logic to fetch and display all initial products
+  // This could be similar to the existing AJAX call but without the category filter
+  // For demonstration, let's assume it's a simple fetch to a PHP script that returns all products
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'get_products.php', true); // Assuming 'get_products.php' returns all products when no cat_id is provided
+  xhr.onload = function() {
+    if (this.status == 200) {
+      try {
+        var products = JSON.parse(this.responseText);
+        var output = '';
+        for (let i = 0; i < products.length; i++) {
+          // Same logic to build the output with all products
+        }
+        document.querySelector('.card-container').innerHTML = output;
+      } catch (e) {
+        document.querySelector('.card-container').innerHTML = '<p>Error parsing product data. Please try again.</p>';
+      }
+    } else {
+      document.querySelector('.card-container').innerHTML = '<p>Error loading products. Please try again.</p>';
+    }
+  };
+  xhr.onerror = function() {
+    document.querySelector('.card-container').innerHTML = '<p>Network error. Please check your connection and try again.</p>';
+  };
+  xhr.send();
+}
 </script>
 
 
