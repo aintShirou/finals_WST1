@@ -28,13 +28,12 @@ if (isset($_POST['login'])) {
             $params = session_get_cookie_params();
             setcookie(session_name(), session_id(), time() + (86400 * 30), $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
         }
-        // No else part needed, as PHP sessions expire when the browser is closed by default
+        
 
         header('location:index.php');
         exit();
     } else {
-        $error = "Incorrect username or password. Please try again.";
-    }
+        $error = "Incorrect username or password. Please try again.";    }
 }
 
   ?>
@@ -121,7 +120,13 @@ if (isset($_POST['login'])) {
                                         </div>
                                         <a href="forgot_password.php" style="text-decoration:none;">Forget Password?</a>
                                     </div>
-                                
+                                    <?php if (!empty($error)) : ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <?php echo $error; ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+                                    
                                     <!-- Submit button -->
                                     <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block mb-4" value="Log In" name="login"></input>
                                 </form>

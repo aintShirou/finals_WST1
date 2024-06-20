@@ -152,10 +152,10 @@ $con = new database();
                       $lowstocks = $con->lowStocks();
                       foreach($lowstocks as $lowstock){
                         ?>
-                    <div class="product-card">
-                        <div class="productimgs">
-                        <img class="product-images" src="<?php echo $lowstock['item_image'];?>" alt="Product Image">
-                        </div>
+                    <div class="card">
+                       
+                        <img class="card-img" src="<?php echo $lowstock['item_image'];?>" alt="Product Image">
+                        
                         <div class="product-details">
                             <h4 class="product-names"><?php echo $lowstock['product_brand'];?></h4>
                             <h4 class="product-name"><?php echo $lowstock['product_name'];?></h4>
@@ -288,7 +288,7 @@ $con = new database();
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
+          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton">Add Account</button>
         </div>
       </form>
     </div>
@@ -375,7 +375,7 @@ $(document).ready(function(){
 
 <!-- Validation of Password -->
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
     // Initially disable the "Add Account" button
     $('#submitBtn').prop('disabled', true);
 
@@ -474,6 +474,9 @@ $(document).ready(function(){
   });
 </script>
 
+
+
+
 <!-- Checking for Email -->
 <script>
 $(document).ready(function(){
@@ -537,12 +540,6 @@ $(document).ready(function(){
 });
 
 </script>
-
-
-
-
-
-
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

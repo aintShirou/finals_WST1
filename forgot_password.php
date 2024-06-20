@@ -9,11 +9,13 @@ require 'phpmailer/src/Exception.php';
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 
+$message = '';
+
 if (isset($_POST['reset_password'])) {
     $mail = new PHPMailer(true);
 
     try {
-        //Server settings
+        // Server settings
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
@@ -22,34 +24,33 @@ if (isset($_POST['reset_password'])) {
         $mail->SMTPSecure = 'ssl'; // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 465; // TCP port to connect to
 
-        //Recipients
+        // Recipients
         $mail->setFrom('atallado008@gmail.com', 'Dynrax');
         $mail->addAddress($_POST['email']); // Add a recipient, the email to which you are sending the reset link
 
-        // Content
-        $mail->isHTML(true);
-        $mail->Subject = 'Reset Your Password';
+        // Check if the email exists in the database
+        if ($con->checkEmail($_POST['email'])) {
+            // Generate a unique reset token
+            $resetToken = $con->generateResetToken($_POST['email'], $con);
+            $resetLink = "http://localhost/finals_wst1/reset_password.php?token=" . $resetToken;// Replace with your actual reset link
 
-        // Generate a unique reset token
-        $resetToken = generateResetToken($_POST['email'], $con);
-        $resetLink = "http://localhost/finals_wst1/reset_password.php?token=" . $resetToken;// Replace with your actual reset link
+            $mail->Subject = 'Reset Your Password';
+            $mail->Body    = 'Please click on the following link to reset your password: <a href="' . $resetLink . '">Reset Password</a>';
+            $mail->AltBody = 'Please copy and paste the following URL in your browser to reset your password: ' . $resetLink;
 
-        $mail->Body    = 'Please click on the following link to reset your password: <a href="' . $resetLink . '">Reset Password</a>';
-        $mail->AltBody = 'Please copy and paste the following URL in your browser to reset your password: ' . $resetLink;
-
-        $mail->send();
-        echo "<script>console.log('Reset password link has been sent to your email.');</script>";
+            if ($mail->send()) {
+                $message = '<div class="message-box success">Reset password link has been sent to your email.</div>';
+            } else {
+                $message = '<div class="message-box error">Message could not be sent. Mailer Error: ' . $mail->ErrorInfo . '</div>';
+            }
+        } else {
+            $message = '<div class="message-box error">The email address you provided is not registered.</div>';
+        }
     } catch (Exception $e) {
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        $message = '<div class="message-box error">Message could not be sent. Mailer Error: ' . $e->getMessage() . '</div>';
     }
 }
 
-// Function to generate a unique token for password reset
-function generateResetToken($email, $con) {
-    $token = bin2hex(random_bytes(16)); // Example token generation
-    $reset = $con->emailResetPass($email, $token); // Save $token in your database associated with $email
-    return $token;
-}
 ?>
 
 <!DOCTYPE html>
@@ -71,6 +72,29 @@ function generateResetToken($email, $con) {
 
 
 </head>
+<style>
+    .message-container {
+    margin-bottom: 20px;
+}
+
+.message-box {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.message-box.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message-box.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+</style>
 <body>
     <div class="main-container">
 
@@ -118,6 +142,12 @@ function generateResetToken($email, $con) {
                                         <label class="form-label" for="form2Example1">Email</label>
                                         <input type="text" id="form2Example1" class="form-control" name="email"/>
                                     </div>
+
+
+                                    <div class="message-container">
+                                        <?php echo $message; ?>
+                                    </div>
+                                    
                                 
                                     <!-- Submit button -->
                                     <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block " value="Send Email Link" name="reset_password"></input>

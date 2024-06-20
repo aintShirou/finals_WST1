@@ -137,12 +137,13 @@
     transition: background-color .3s;
     border: 1px solid #ddd;
     margin: 0 4px;
+    border: none;
 }
 
 .pagination a.active {
-    background-color: #4CAF50;
+    background-color: red;
     color: white;
-    border: 1px solid #4CAF50;
+    border: none;
 }
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
@@ -293,7 +294,7 @@
               <div class="mb-3">
                 <label for="productImage" class="form-label text-white">Product Image</label>
                 <div class="input-group">
-                  <input type="file" class="form-control d-none" id="productImage" name="productImage" aria-describedby="inputGroupFileAddon" onchange="previewImage()">
+                  <input type="file" class="form-control d-none" id="productImage" name="productImage" aria-describedby="inputGroupFileAddon" onchange="previewImage()" required>
                   <label class="input-group-text" for="productImage">
                     <i class="bx bx-image" style="font-size: 1.5rem; color: #fff;"></i>
                   </label>
@@ -304,15 +305,15 @@
               </div>
               <div class="mb-3">
                 <label for="productBrand" class="form-label text-white">Brand</label>
-                <input type="text" class="form-control" id="productBrand" name="productBrand">
+                <input type="text" class="form-control" id="productBrand" name="productBrand" required>
               </div>
               <div class="mb-3">
                 <label for="productName" class="form-label text-white">Product Name</label>
-                <input type="text" class="form-control" id="productName" name="productName">
+                <input type="text" class="form-control" id="productName" name="productName" required>
               </div>
               <div class="mb-3">
                 <label for="productCategory" class="form-label text-white">Category</label>
-                <select class="form-select" id="productCategory" name="productCategory">
+                <select class="form-select" id="productCategory" name="productCategory" required>
                   <option value="selected">Select Category </option>
                   <?php 
                     $category = $con->viewCat();
@@ -326,11 +327,11 @@
               </div>
               <div class="mb-3">
                 <label for="productQuantity" class="form-label text-white">Quantity</label>
-                <input type="number" class="form-control" id="productQuantity" name="productQuantity">
+                <input type="number" class="form-control" id="productQuantity" name="productQuantity" required>
               </div>
               <div class="mb-3">
                 <label for="productPrice" class="form-label text-white">Price</label>
-                <input type="text" class="form-control" id="productPrice" name="productPrice">
+                <input type="text" class="form-control" id="productPrice" name="productPrice" required>
               </div>
             </div>
             <div class="modal-footer">
@@ -354,7 +355,7 @@
               <div class="modal-body" style="color: #fff;">
                 <div class="mb-3">
                   <label for="addcategory" class="form-label">Category</label>
-                  <input type="text" class="form-control" id="addcategory" name="category">
+                  <input type="text" class="form-control" id="addcategory" name="category" required>
                 </div>
               </div>
               <div class="modal-footer">
@@ -450,7 +451,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
+          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton">Add Account</button>
         </div>
       </form>
     </div>

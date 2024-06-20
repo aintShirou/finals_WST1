@@ -40,6 +40,7 @@ if (!isset($_SESSION['user'])) {
 
 .pagination a {
     color: white;
+    background-color: red;
     float: left;
     padding: 8px 16px;
     text-decoration: none;
@@ -49,12 +50,15 @@ if (!isset($_SESSION['user'])) {
 }
 
 .pagination a.active {
-    background-color: #4CAF50;
-    color: white;
+    background-color: white;
+    color: red;
     border: 1px solid #4CAF50;
 }
 
-.pagination a:hover:not(.active) {background-color: #ddd;}
+.pagination a:hover:not(.active) {
+  background-color: red;
+  color:white;
+  }
 </style>
 <body>
 
@@ -154,11 +158,11 @@ if (!isset($_SESSION['user'])) {
                                       <form id="myForm" method="post">
                                         <div class="row">
                                           <div class="col-md-6">
-                                            <input type="text" class="form-control" placeholder="Enter Customer Name" name="customer_name">
+                                            <input type="text" class="form-control" placeholder="Enter Customer Name" name="customer_name" required>
                                           </div>
                                           <div class="col-md-6">
                                             <div class="mb-3">
-                                              <select class="form-select" id="paymentmethod" name="payment_method">
+                                              <select class="form-select" id="paymentmethod" name="payment_method" required>
                                                 <option value="0">Select Payment</option>
                                                 <option value="1">Cash</option>
                                                 <option value="2">Debit/Credit</option>

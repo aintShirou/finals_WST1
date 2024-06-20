@@ -12,7 +12,7 @@ if (isset($_POST['Reset'])) {
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Identify user by their token
-        $token = $_GET['token'];
+        $token = $_POST['token'];
 
         // Retrieve user based on the token
         $user = $con->getUserByToken($token);

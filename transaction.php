@@ -81,10 +81,11 @@
                                 <input type="week" id="filterWeek" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem;  border-radius: 3px;" onchange="filterTransactions()">
 
                               </div>
-                              <button class="btn btn-danger" onclick="exportToExcel()">Export to Excel</button>
+                              
                           </div>
                           <!-- Table for Transaction -->
-                          <div class="table-trans">
+                          <div class="table-trans table-responsive">
+                          <button class="btn btn-danger" onclick="exportToExcel()">Export to Excel</button>
                               <table class="table" id="transactionTable">
                                   <thead>
                                       <tr>
@@ -138,10 +139,11 @@
                                 <input type="month" id="monthsFilter" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;" onchange="filterTransaction()">
                                 <input type="week" id="weeksFilter" style="background-color: #FF5757; color: white; border: none; padding: 5px; width: 9rem; border-radius: 3px;" onchange="filterTransaction()">
                               </div>
-                          <button class="btn btn-danger" onclick="exportOrderToExcel()">Export to Excel</button>
+                         
                         </div>
                       <!-- Recent Purchases -->
-                      <div class="recent-pur">
+                      <div class="recent-pur table-responsive">
+                      <button class="btn btn-danger" onclick="exportOrderToExcel()">Export to Excel</button>
                           <table class="table" id="recentOrderTable">
                               <thead>
                                   <tr>
@@ -172,14 +174,14 @@
                                   ?>
                               </tbody>
                           </table>
-                      </div>
-                        <?php
+                            <?php
                         $total_order_pages = ceil($total_orders / $records_per_page);
 
                         for ($i=1; $i<=$total_order_pages; $i++) {
                           echo "<a href='transaction.php?order_page=".$i."'>".$i."</a> ";
                       }
                         ?>
+                      </div>
                       </div>
                     </div>
       
@@ -319,7 +321,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton" disabled>Add Account</button>
+          <button type="submit" class="btn btn-danger" id="submitBtn" name="addAccountButton">Add Account</button>
         </div>
       </form>
     </div>

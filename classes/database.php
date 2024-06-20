@@ -720,4 +720,28 @@ function updateUserPassword($adminId, $hashedPassword) {
         return false; // Failed to update password
     }
 }
+
+
+// Function to generate a unique token for password reset
+function generateResetToken($email, $con) {
+    $token = bin2hex(random_bytes(16)); // Example token generation
+     $con->emailResetPass($email, $token); // Save $token in your database associated with $email
+    return $token;
+}
+
+function checkEmail($email) {
+    $con = $this->opencon();
+    $stmt = $con->prepare("SELECT email FROM admin WHERE email = :email");
+    $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($result !== false) {
+        // Email found in the database
+        return true;
+    } else {
+        // Email not found in the database
+        return false;
+    }
+}
 }
