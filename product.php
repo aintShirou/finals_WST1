@@ -490,21 +490,41 @@ document.getElementById('stockCategory').addEventListener('change', function() {
   xhr.send();
 });
 
+function renderProducts(products) {
+  let output = '';
+  for (let i = 0; i < products.length; i++) {
+    // Build the HTML output for each product
+    output += `<div class="card mb-4">
+              <img src="${products[i].item_image}" class="card-img-top" alt="${products[i].product_name}">
+              <div class="card-bodys">
+                <h5 class="card-titles">${products[i].product_name}</h5>
+                <p class="card-texts">${products[i].product_brand}</p>
+                <p class="card-text">Current stocks: ${(products[i].stocks)}</p
+                <h2 class="card-prices">₱${products[i].price}</h2>
+                <div class="checkoutbtns">
+                  <button type="button" class="add-button"
+                    data-item-id="${products[i].product_id}"
+                    data-image-url="${products[i].item_image}"
+                    data-brand="${products[i].product_brand}"
+                    data-title="${products[i].product_name}"
+                    data-price="${products[i].price}"
+                    data-stock="${products[i].stocks}">Add to Cart</button>
+                </div>
+              </div>
+            </div>`;
+  }
+  return output;
+}
+
 function fetchInitialProducts() {
-  // Implement the logic to fetch and display all initial products
-  // This could be similar to the existing AJAX call but without the category filter
-  // For demonstration, let's assume it's a simple fetch to a PHP script that returns all products
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'get_products.php', true); // Assuming 'get_products.php' returns all products when no cat_id is provided
+  xhr.open('GET', 'get_products.php', true);
   xhr.onload = function() {
     if (this.status == 200) {
       try {
         var products = JSON.parse(this.responseText);
-        var output = '';
-        for (let i = 0; i < products.length; i++) {
-          // Same logic to build the output with all products
-        }
-        document.querySelector('.card-container').innerHTML = output;
+        var productOutput = renderProducts(products);
+        document.querySelector('.card-container').innerHTML = productOutput;
       } catch (e) {
         document.querySelector('.card-container').innerHTML = '<p>Error parsing product data. Please try again.</p>';
       }

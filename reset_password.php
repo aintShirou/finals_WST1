@@ -2,7 +2,6 @@
 require_once('classes/database.php');
 $con = new database();
 
-
 if (isset($_POST['Reset'])) {
     $newPassword = $_POST['pass'];
     $confirmPassword = $_POST['cpass'];
@@ -24,13 +23,13 @@ if (isset($_POST['Reset'])) {
                 header('Location: login.php');
                 exit; 
             } else {
-                echo "<script>alert('Failed to reset password. Please try again.');</script>";
+                echo "alert('Failed to reset password. Please try again.');";
             }
         } else {
-            echo "<script>alert('Invalid token. Cannot reset password.');</script>";
+            echo "alert('Invalid token. Cannot reset password.');";
         }
     } else {
-        echo "<script>alert('Passwords do not match. Please try again.');</script>";
+        echo "alert('Passwords do not match. Please try again.');";
     }
 }
 
@@ -98,17 +97,20 @@ if (isset($_POST['Reset'])) {
 
                                     <h1>Reset Password</h1>
 
-                                    <!-- Email input -->
-                                    <div data-mdb-input-init class="form-outline mb-2">
-                                        <label class="form-label" for="form2Example1">New Password</label>
-                                        <input type="Pass" id="form2Example1" class="form-control" name="pass"/>
-                                    </div>
-                                
                                     <!-- Password input -->
                                     <div data-mdb-input-init class="form-outline mb-2">
-                                        <label class="form-label" for="form2Example2">Confirm Password</label>
-                                        <input type="password" id="form2Example2" class="form-control" name="cpass" />
+                                        <label class="form-label" for="form2Example1">New Password</label>
+                                        <input type="password" id="form2Example1" class="form-control password" name="pass" required />
+                                        <div class="valid-feedback">Looks good!</div>
+                                        <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
                                     </div>
+
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="form2Example2">Confirm Password</label>
+                                        <input type="password" id="form2Example2" class="form-control confirm-password" name="cpass" required />
+                                        <div class="valid-feedback">Looks good!</div>
+                                        <div class="invalid-feedback">Password doesn't match</div>
+                                    </div>                                  
                                 
                                     <!-- Submit button -->
                                     <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block mb-4" value="Reset Password" name="Reset"></input>
@@ -125,5 +127,46 @@ if (isset($_POST['Reset'])) {
         </div>
 
     </div>
+
+
+    <script>
+    // Get the password and confirm password input fields
+    const passwordInput = document.querySelector('.password');
+    const confirmPasswordInput = document.querySelector('.confirm-password');
+
+    // Add event listener for password input
+    passwordInput.addEventListener('input', validatePassword);
+
+    // Add event listener for confirm password input
+    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+    // Password validation function
+    function validatePassword() {
+        const password = passwordInput.value;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (passwordRegex.test(password)) {
+            passwordInput.classList.add('is-valid');
+            passwordInput.classList.remove('is-invalid');
+        } else {
+            passwordInput.classList.add('is-invalid');
+            passwordInput.classList.remove('is-valid');
+        }
+    }
+
+    // Confirm password validation function
+    function validateConfirmPassword() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (password === confirmPassword) {
+            confirmPasswordInput.classList.add('is-valid');
+            confirmPasswordInput.classList.remove('is-invalid');
+        } else {
+            confirmPasswordInput.classList.add('is-invalid');
+            confirmPasswordInput.classList.remove('is-valid');
+        }
+    }
+</script>
 </body>
 </html>

@@ -92,7 +92,7 @@ $con = new database();
                         $totalSalesThisWeek = $con->getTotalSalesDifference();
                         $percentage = $con->getSalesPercentage();
                         ?>
-                    <p><span><?php echo round($percentage); ?>%</span> +₱<?php echo $totalSalesThisWeek; ?> this week</p>
+                    <p><span><?php echo round($percentage); ?>% </span> +₱<Strong><?php echo $totalSalesThisWeek; ?></Strong>  this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -106,7 +106,7 @@ $con = new database();
                        $weeklyCust = $con->weeklyCustomerCount();
                        $custPercentage = $con->customerPercentage();
                        ?>
-                    <p><span><?php echo round($custPercentage); ?>%</span> <?php echo $weeklyCust; ?> customers this week</p>
+                    <p><span><?php echo round($custPercentage); ?>%</span> <Strong><?php echo $weeklyCust; ?> </Strong> customers this week</p>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -120,7 +120,7 @@ $con = new database();
                       $weeklyOrders = $con->weeklyOrders();
                       $orderPercentage = $con->orderPercentage();
                       ?>
-                    <p><span><?php echo round($orderPercentage); ?>%</span> <?php echo $weeklyOrders; ?> orders this week</p>
+                    <p><span><?php echo round($orderPercentage); ?>%</span> <Strong><?php echo $weeklyOrders; ?> </Strong>orders this week</p>
 
                   </div>
                 </div>
@@ -131,7 +131,10 @@ $con = new database();
                   <div class="box">
                     <h3>Product in Stocks</h3>
                     <h1><?php echo $totalp['total'];?></h1>
-                    <!-- <p><span>100%</span> +₱2.8k this week</p> -->
+                    <?php
+                    $productsBought = $con->weeklyProductCountBought();
+                    ?>
+                    <p><Strong><?php echo $productsBought; ?></Strong> products bought this week</p>
                   </div>
                 </div>
               </div>

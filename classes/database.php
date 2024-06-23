@@ -396,8 +396,8 @@ function weeklyCustomerCount(){
             SELECT DISTINCT orders.customer_name
             FROM orders
             INNER JOIN transactions ON transactions.order_id = orders.order_id
-            WHERE transactions.paymentdate >= CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 1 DAY
-            AND transactions.paymentdate < CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 8 DAY
+            WHERE DATE(transactions.paymentdate) >= DATE_SUB(
+            CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND DATE(paymentdate) <= CURDATE()
             GROUP BY orders.customer_name
         ) AS grouped_customers;");
         
@@ -433,8 +433,8 @@ FROM (
             SELECT DISTINCT orders.customer_name
             FROM orders
             INNER JOIN transactions ON transactions.order_id = orders.order_id
-            WHERE transactions.paymentdate >= CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 1 DAY
-            AND transactions.paymentdate < CURRENT_DATE - INTERVAL DAYOFWEEK(CURRENT_DATE) - 8 DAY
+            WHERE DATE(transactions.paymentdate) >= DATE_SUB(
+            CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND DATE(paymentdate) <= CURDATE()
             GROUP BY orders.customer_name
         ) AS grouped_customers;");
         $customersThisWeekResult = $customersThisWeekStmt->fetch(PDO::FETCH_ASSOC);
@@ -730,4 +730,19 @@ function checkEmail($email) {
         return false;
     }
 }
+function weeklyProductCountBought() {
+    $con = $this->opencon();
+    $stmt = $con->prepare("SELECT
+        SUM(orders.quantity_ordered) as total
+        FROM transactions
+        INNER JOIN orders ON transactions.order_id = orders.order_id
+        WHERE DATE(transactions.paymentdate) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
+        AND DATE(transactions.paymentdate) <= CURDATE()");
+
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total'];
+}
+
+
 }

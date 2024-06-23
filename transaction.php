@@ -20,7 +20,7 @@
     <title>Dynrax Auto Supply | Transaction</title>
 
     <!-- Style -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="bootstrap-4.5.3-dist/css/bootstrap.css">

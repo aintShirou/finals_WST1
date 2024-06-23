@@ -8,6 +8,10 @@ $searchQuery = $_POST['search'];
 // The selectedCategory variable and its handling are removed
 $products = $con->searchProducts($searchQuery);
 
+if (empty($products)) { 
+    echo "<p class='err'>No products found.</p>"; 
+} else{
+
 foreach($products as $product) {
     $productImage = $product['item_image'];
     $productBrand = $product['product_brand'];
@@ -38,4 +42,5 @@ foreach($products as $product) {
         </div>
     </div>
 HTML;
+}
 }
