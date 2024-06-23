@@ -129,10 +129,10 @@ function insertOrders($customer_name, $product_id, $quantity_ordered){
     return $con->lastInsertId();
 }
 
-function insertTransaction($order_id, $payment_method, $payment_date, $total){
+function insertTransaction($order_id, $payment_method, $payment_date, $total, $amount_paid){
     $con = $this->opencon();
-    $query = $con->prepare("INSERT INTO transactions (order_id, payment_method, paymentdate, payment_total) VALUES (?, ?, ?, ?)");
-    if (!$query->execute([$order_id, $payment_method, $payment_date, $total])) {
+    $query = $con->prepare("INSERT INTO transactions (order_id, payment_method, paymentdate, payment_total, amount_paid) VALUES (?, ?, ?, ?,?)");
+    if (!$query->execute([$order_id, $payment_method, $payment_date, $total, $amount_paid])) {
         throw new Exception($query->errorInfo()[2]);
     }
 }
@@ -157,22 +157,8 @@ function updateProductStock($product_id, $quantity){
 
 function viewTransactions($start_from, $records_per_page) {
     $con = $this->opencon();
-    $stmt = $con->prepare("SELECT
-    orders.customer_name,
-    transactions.trans_id,
-    transactions.payment_method,
-    DATE(transactions.paymentdate) AS paymentdate,
-    COUNT(orders.order_id) AS total_orders,
-    SUM(transactions.payment_total) AS total_purchases
-FROM
-    transactions
-INNER JOIN orders ON transactions.order_id = orders.order_id
-GROUP BY
-    orders.customer_name,
-    transactions.paymentdate
-ORDER BY
-    `transactions`.`paymentdate`
-DESC LIMIT :start_from, :records_per_page");
+    $stmt = $con->prepare("SELECT orders.customer_name, transactions.trans_id, transactions.payment_method, GROUP_CONCAT( product.product_brand) as Product_brand, GROUP_CONCAT( product.product_name) as Bought_Product, GROUP_CONCAT( product.price) as price, DATE(transactions.paymentdate) AS paymentdate, COUNT(orders.order_id) AS total_orders, SUM(transactions.payment_total) AS total_purchases, GROUP_CONCAT(orders.quantity_ordered) as quantity, transactions.amount_paid, (transactions.amount_paid-transactions.payment_total) AS amount_change FROM transactions INNER JOIN orders ON transactions.order_id = orders.order_id INNER JOIN product on orders.product_id = product.product_id GROUP BY orders.customer_name, transactions.paymentdate ORDER BY `transactions`.`paymentdate`
+    DESC LIMIT :start_from, :records_per_page");
     $stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
     $stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
     $stmt->execute();

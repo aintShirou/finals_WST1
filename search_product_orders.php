@@ -19,6 +19,7 @@ if(empty($products)) {
         echo "    <div class='card-bodys'>\n";
         echo "      <h5 class='card-titles'>" . htmlspecialchars($product['product_name']) . "</h5>\n";
         echo "      <p class='card-texts'>" . htmlspecialchars($product['product_brand']) . "</p>\n";
+        echo "      <p class='card-text'>Current stocks: " . htmlspecialchars($product['stocks']) . "</p>\n";
         echo "      <h2 class='card-prices'>₱" . htmlspecialchars($product['price']) . "</h2>\n";
         echo "      <div class='checkoutbtns'>\n";
         echo "        <button type='button' class='add-button' data-item-id='" . htmlspecialchars($product['product_id']) . "' data-image-url='" . htmlspecialchars($product['item_image']) . "' data-brand='" . htmlspecialchars($product['product_brand']) . "' data-title='" . htmlspecialchars($product['product_name']) . "' data-price='" . htmlspecialchars($product['price']) . "' data-stock='" . htmlspecialchars($product['stocks']) . "'>Add to Cart</button>\n";

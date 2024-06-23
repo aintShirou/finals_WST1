@@ -111,7 +111,19 @@
                                       foreach ($trans as $transaction) {
                                       ?>
                                           <tr>
-                                              <td><a href="#" data-toggle="modal" data-target="#ORModal"><?php echo $counter_trans--; ?></a></td>
+                                          <td><a href="#" data-toggle="modal" data-target="#ORModal" 
+                                            data-id="<?php echo $transaction['trans_id']; ?>"
+                                            data-product-name="<?php echo $transaction['Bought_Product']; ?>"
+                                            data-product-brand="<?php echo $transaction['Product_brand']; ?>"
+                                            data-product-price="<?php echo $transaction['price']; ?>"
+                                            data-product-quantity="<?php echo $transaction['quantity']; ?>"
+                                            data-total-label="TOTAL"
+                                            data-total-amount="<?php echo $transaction['total_purchases']; ?>"
+                                            data-payment-method-label="PAYMENT METHOD"
+                                            data-payment-method="<?php echo $transaction['payment_method']; ?>"
+                                            data-cash="<?php echo $transaction['amount_paid']; ?>"
+                                            data-change="<?php echo $transaction['amount_change']; ?>"
+                                            ><?php echo $counter_trans--; ?></a></td>
                                               <td><?php echo ucwords($transaction['customer_name']); ?></td>
                                               <td><?php echo ucwords($transaction['payment_method']); ?></td>
                                               <td><?php echo $transaction['paymentdate']; ?></td>
@@ -229,7 +241,7 @@
         </button>
       </div>
       <div class="modal-body text-white">
-        <p>Order Receipt:</p>
+        <p>Order Receipt: </p>
         <table class="table">
           <thead>
             <tr>
@@ -241,35 +253,35 @@
           </thead>
           <tbody>
             <tr>
-              <td>NAME</td>
-              <td>BRAND</td>
-              <td>₱1234</td>
-              <td>14</td>
+              <td data-product-name=>NAME</td>
+              <td data-product-brand=>BRAND</td>
+              <td data-product-price=>₱1234</td>
+              <td data-product-quantity>14</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
-              <td>Total:</td>
-              <td></td>
+              <td data-total-label>Total:</td>
+              <td data-total-amount>0</td>
             </tr>
             <tr>
-              <td>Payment Method:</td>
-              <td></td>
+              <td data-payment-method-label>Payment Method:</td>
+              <td data-payment-method>-</td>
             </tr>
             <tr>
-              <td>Cash:</td>
-              <td></td>
+              <td data-cash-label>Cash:</td>
+              <td data-cash>0</td>
             </tr>
             <tr>
-              <td>Change:</td>
-              <td></td>
+              <td data-change-label>Change:</td>
+              <td data-change>0</td>
             </tr>
           </tfoot>
         </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Print</button>
+      <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-danger print-button" onclick="printModal()">Print</button>
       </div>
     </div>
   </div>
@@ -330,6 +342,41 @@
 
     <!-- AJAX Libary -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+ $(document).ready(function() {
+  $('#ORModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget); // Button that triggered the modal
+    let transactionId = button.data('id');
+    let productName = button.data('product-name');
+    let productBrand = button.data('product-brand');
+    let productPrice = button.data('product-price');
+    let productQuantity = button.data('product-quantity');
+    let totalLabel = button.data('total-label');
+    let totalAmount = button.data('total-amount');
+    let paymentMethodLabel = button.data('payment-method-label');
+    let paymentMethod = button.data('payment-method');
+    let cashLabel = button.data('cash-label');
+    let cash = button.data('cash');
+    let changeLabel = button.data('change-label');
+    let change = button.data('change');
+
+    // Update the modal's content with the retrieved data
+    $('#ORModal [data-product-name]').text(productName);
+    $('#ORModal [data-product-brand]').text(productBrand);
+    $('#ORModal [data-product-price]').text(`₱${productPrice}`);
+    $('#ORModal [data-product-quantity]').text(productQuantity);
+    $('#ORModal [data-total-label]').text(totalLabel);
+    $('#ORModal [data-total-amount]').text(totalAmount);
+    $('#ORModal [data-payment-method-label]').text(paymentMethodLabel);
+    $('#ORModal [data-payment-method]').text(paymentMethod);
+    $('#ORModal [data-cash-label]').text(cashLabel);
+    $('#ORModal [data-cash]').text(cash);
+    $('#ORModal [data-change-label]').text(changeLabel);
+    $('#ORModal [data-change]').text(change);
+  });
+});
+      </script>
 
       <script>
         $(document).ready(function() {
@@ -567,7 +614,74 @@ $(document).ready(function(){
 
 </script>
 
-<!-- Recent Order Filter -->
+
+<script>
+ $(document).ready(function() {
+  $('#transactionModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget); // Button that triggered the modal
+    let transactionId = button.data('transaction-id'); // Extract the transaction ID from the data-* attribute
+
+    // Make an AJAX request to fetch the transaction details
+    $.ajax({
+      url: 'get_transaction_details.php',
+      type: 'GET',
+      data: {id: transactionId},
+      success: function (data) {
+        // Update the modal's content with the retrieved data
+        $('#transactionModal .modal-body').html(data);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error('AJAX error:', textStatus, errorThrown);
+        // Display an error message or handle the error in your application
+        showErrorMessage('Failed to fetch transaction details. Please try again later.');
+      }
+    });
+  });
+});
+
+// Function to show an error message
+function showErrorMessage(message) {
+  // Get the error message container
+  const errorContainer = $('#errorMessage');
+
+  // Update the error message
+  errorContainer.text(message);
+  errorContainer.show();
+
+  // Hide the error message after 5 seconds
+  setTimeout(function() {
+    errorContainer.hide();
+  }, 5000);
+}
+</script>
+
+<script>
+ function printModal() {
+  // Get the modal element
+  var modal = document.getElementById("ORModal");
+
+  // Remove the print and close buttons
+  var printButton = modal.querySelector('.print-button');
+  var closeButton = modal.querySelector('.close-button');
+  if (printButton) {
+    printButton.style.display = 'none';
+  }
+  if (closeButton) {
+    closeButton.style.display = 'none';
+  }
+
+  // Print the modal content
+  var printContent = modal.innerHTML;
+  var originalContent = document.body.innerHTML;
+  document.body.innerHTML = printContent;
+  window.print();
+  document.body.innerHTML = originalContent;
+
+  // Reload the page
+  window.location.reload();
+}
+</script>
+
 
 
 

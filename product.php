@@ -173,7 +173,7 @@ if (!isset($_SESSION['user'])) {
                                         </div>
                                         <div class="row">
                                           <div class="col-md-12 my-3">
-                                            <input type="number" class="form-control" id="amountPaid" placeholder="Enter amount paid">
+                                            <input type="number" class="form-control" id="amountPaid" placeholder="Enter amount paid" name="amountpaid">
                                           </div>
                                         </div>
                                         <div class="head"><p>My Cart</p></div>
@@ -457,6 +457,7 @@ document.getElementById('stockCategory').addEventListener('change', function() {
               <div class="card-bodys">
                 <h5 class="card-titles">${products[i].product_name}</h5>
                 <p class="card-texts">${products[i].product_brand}</p>
+                <p class="card-text">Current stocks: ${(products[i].stocks)}</p
                 <h2 class="card-prices">₱${products[i].price}</h2>
                 <div class="checkoutbtns">
                   <button type="button" class="add-button"
