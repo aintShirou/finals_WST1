@@ -19,15 +19,14 @@ if (isset($_POST['reset_password'])) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'atallado008@gmail.com'; // SMTP username
-        $mail->Password = 'yrea aklm rono mdwy'; // SMTP password
-        $mail->SMTPSecure = 'ssl'; // Enable TLS encryption, `ssl` also accepted
-        $mail->Port = 465; // TCP port to connect to
+        $mail->Username = 'atallado008@gmail.com';
+        $mail->Password = 'yrea aklm rono mdwy'; 
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465; 
 
         // Recipients
         $mail->setFrom('atallado008@gmail.com', 'Dynrax');
-        $mail->addAddress($_POST['email']); // Add a recipient, the email to which you are sending the reset link
-
+        $mail->addAddress($_POST['email']);
         // Check if the email exists in the database
         if ($con->checkEmail($_POST['email'])) {
             // Generate a unique reset token
